@@ -1,5 +1,5 @@
 
-name: Ace.Cli Build/Test
+name: AceCli Build/Test
 
 env:
   SUBPROJECT: AceCli
