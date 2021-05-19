@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+ <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLIneParser" Version="2.7.82" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AceGameCode\AceGameCode.csproj" />
+    <ProjectReference Include="..\..\..\UniLog\src\UniLog\UniLog.csproj" />
+  </ItemGroup>
+
+</Project>
