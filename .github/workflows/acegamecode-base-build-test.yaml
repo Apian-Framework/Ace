@@ -7,6 +7,7 @@ env:
 # Keep in mind: the ApianBadges repo MUST have a branch withthe same name as the subproject
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
     paths:
