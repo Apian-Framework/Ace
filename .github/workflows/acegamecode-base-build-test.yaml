@@ -41,11 +41,17 @@ jobs:
         repository: Apian-Framework/UniLog
         path: UniLog
 
+    - name: Checkout dependencies (NotUnityEngine)
+      uses: actions/checkout@v2
+      with:
+        repository: Apian-Framework/NotUnityEngine
+        path: NotUnityEngine
+
     - name: Checkout dependencies (Apian)
       uses: actions/checkout@v2
       with:
         repository: Apian-Framework/Apian.Net
-        path: Apian
+        path: Apian.Net
 
     - name: Restore dependencies
       run: dotnet restore
