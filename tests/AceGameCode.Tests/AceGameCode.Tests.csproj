@@ -23,11 +23,12 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <Include>[AceGameCode]*</Include>
+    <Verbosity>Normal</Verbosity>
     <!-- These are all for 'dotnet test' in order to match the ReportGenerator stuff below -->
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutput>./coverage/</CoverletOutput>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
-    <Include>[AceGameCode]*</Include>
   </PropertyGroup>
 
   <Target Name="GenerateHtmlCoverageReport" AfterTargets="GenerateCoverageResultAfterTest"
