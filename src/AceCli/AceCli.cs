@@ -7,7 +7,7 @@ using UniLog;
 
 namespace AceCli
 {
-    class Program
+    public class Program
     {
         public class CliOptions
         {
@@ -75,7 +75,7 @@ namespace AceCli
     }
 
 
-    class CliDriver
+    public class CliDriver
     {
         public long targetFrameMs {get; private set;} = 16;
 
