@@ -1,13 +1,33 @@
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Apian;
 
 namespace AceGameCode
 {
     public class AceMessage : ApianCoreMessage
     {
+        public const string kNewPlayer = "NPly";
+        public const string kPlayerLeft = "PlyL";
         public const string kPlacePlane = "PlPl";
         public const string kMovePlane = "MvPl";
 
-        public AceMessage(string type) : base(type, 0) {} // TODO: Does Ace care about timestamps?
+        public AceMessage(string type, long timeStamp) : base(type, timeStamp) {}
+        public AceMessage() : base() {} // Must have this for Newtonsoft
+    }
+
+    public class NewPlayerMsg : AceMessage
+    {
+        public AcePlayer newPlayer;
+        public NewPlayerMsg(long ts, AcePlayer _newPlayer) : base(kNewPlayer, ts) => newPlayer = _newPlayer;
+        public NewPlayerMsg() : base() {}
+    }
+
+    public class PlayerLeftMsg : AceMessage
+    {
+        public string peerId;
+        public PlayerLeftMsg(long ts, string _peerId) : base(kPlayerLeft, ts) => peerId = _peerId;
+        public PlayerLeftMsg() : base() {}
 
     }
 
@@ -17,8 +37,8 @@ namespace AceGameCode
         public int xPos;
         public int yPos;
         public string orientationHash;
-        public PlacePlaneMsg() : base(kPlacePlane)  {}
-        public PlacePlaneMsg(string _planeId, int _x, int _y, string _orHash ) : base(kPlacePlane)
+        public PlacePlaneMsg() : base()  {}
+        public PlacePlaneMsg(long ts, string _planeId, int _x, int _y, string _orHash ) : base(kPlacePlane, ts)
         {
             planeId = _planeId;
             xPos = _x;
@@ -34,9 +54,9 @@ namespace AceGameCode
         public int spaces;
         public string newOrientHash;
 
-        public MovePlaneMsg() : base(kPlacePlane)  {}
+        public MovePlaneMsg() : base()  {}
 
-        public MovePlaneMsg(string _planeId, PlaneOrientation _orient, int _spaces, string _newOrHash ) : base(kPlacePlane)
+        public MovePlaneMsg(long ts, string _planeId, PlaneOrientation _orient, int _spaces, string _newOrHash ) : base(kPlacePlane, ts)
         {
             planeId = _planeId;
             orient = _orient;
@@ -46,5 +66,29 @@ namespace AceGameCode
 
     }
 
+    // Serialization
+
+    static public class AceCoreMessageDeserializer
+    {
+
+         public static Dictionary<string, Func<string, ApianCoreMessage>> aceDeserializers = new  Dictionary<string, Func<string, ApianCoreMessage>>()
+         {
+            {AceMessage.kNewPlayer, (s) => JsonConvert.DeserializeObject<NewPlayerMsg>(s) },
+            {AceMessage.kPlayerLeft, (s) => JsonConvert.DeserializeObject<PlayerLeftMsg>(s) },
+            {AceMessage.kPlacePlane, (s) => JsonConvert.DeserializeObject<PlacePlaneMsg>(s) },
+            {AceMessage.kMovePlane, (s) => JsonConvert.DeserializeObject<MovePlaneMsg>(s) },
+
+            // This is a sort-of generic Apian-defined CoreMessage. In practice the Player-related
+            // messages maybe outo to go there as well.
+            // Also - these entries probably ought to be in an Apian-defined dict that is checks along with the local one.
+            // ...or maybe merge them... I dunno.
+            {ApianMessage.CheckpointMsg, (s) => JsonConvert.DeserializeObject<ApianCheckpointMsg>(s) },
+         };
+
+        public static ApianCoreMessage FromJSON(string coreMsgType, string json)
+        {
+            return  aceDeserializers[coreMsgType](json) as ApianCoreMessage;
+        }
+    }
 
 }
