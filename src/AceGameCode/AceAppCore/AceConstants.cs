@@ -1,9 +1,16 @@
 namespace AceGameCode
 {
-    public enum PlaneColor
+    public enum PlayerRole : int
     {
+        kPlayer = 1,
+        kValidator = 2,
+    }
+    public enum PlaneColor : int
+    {
+        kNone = 0,
         kRed = 1,
         kBlue = 2,
+
     }
     public enum BoardSide
     {

@@ -18,12 +18,15 @@ namespace AceGameCodeTests
         {
             const string peerId = "aPeerId";
             const string name = "aName";
+            const PlayerRole role = PlayerRole.kPlayer;
 
-            AcePlayer pl = new AcePlayer(peerId, name);
+            AcePlayer pl = new AcePlayer(peerId, name, role);
 
             Assert.That(pl, Is.Not.Null);
             Assert.That(pl.PeerId, Is.EqualTo(peerId));
             Assert.That(pl.Name, Is.EqualTo(name));
+            Assert.That(pl.Role, Is.EqualTo(role));
+            Assert.That(pl.Team, Is.EqualTo(PlaneColor.kNone));
         }
 
         [Test]
@@ -31,9 +34,11 @@ namespace AceGameCodeTests
         {
             const string peerId = "aPeerId";
             const string name = "aName";
-            const string expected = "[\"" + peerId + "\",\"" + name + "\"]";
+            const PlayerRole role = PlayerRole.kPlayer;
 
-            AcePlayer pl = new AcePlayer(peerId, name);
+            string expected = "[\"" + peerId + "\",\"" + name + "\"," + (int)role + "," + (int)PlaneColor.kNone + "]";
+
+            AcePlayer pl = new AcePlayer(peerId, name, role);
             string result = pl.ApianSerialized();
 
             Assert.That(result, Is.EqualTo(expected));
@@ -44,12 +49,16 @@ namespace AceGameCodeTests
         {
             const string peerId = "aPeerId";
             const string name = "aName";
-            const string json = "[\"" + peerId + "\",\"" + name + "\"]";
+            const PlayerRole role = PlayerRole.kPlayer;
+
+            string json = "[\"" + peerId + "\",\"" + name + "\"," + (int)role + "," + (int)PlaneColor.kRed + "]";
 
             AcePlayer pl = AcePlayer.FromApianJson(json);
 
             Assert.That(pl.PeerId, Is.EqualTo(peerId));
             Assert.That(pl.Name, Is.EqualTo(name));
+            Assert.That(pl.Role, Is.EqualTo(role));
+            Assert.That(pl.Team, Is.EqualTo(PlaneColor.kRed));
         }
 
     }
