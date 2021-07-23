@@ -7,10 +7,14 @@ namespace AceGameCode
 {
     public class AceMessage : ApianCoreMessage
     {
-        public const string kNewPlayer = "NPly";
-        public const string kPlayerLeft = "PlyL";
-        public const string kPlacePlane = "PlPl";
-        public const string kMovePlane = "MvPl";
+        public const string kNewPlayer = "AcNPlr";
+        public const string kPlayerLeft = "AcPlrLft";
+        public const string kNewGame = "AcNwGm";
+        public const string kPlacePlane = "AcPlPl";
+        public const string kMovePlane = "AcMvPl";
+        public const string kTakePlane = "AcTkPl";
+        public const string kDogfight = "AcDgft";
+        public const string kGameOver = "AcGmOv";
 
         public AceMessage(string type, long timeStamp) : base(type, timeStamp) {}
         public AceMessage() : base() {} // Must have this for Newtonsoft
@@ -28,6 +32,12 @@ namespace AceGameCode
         public string peerId;
         public PlayerLeftMsg(long ts, string _peerId) : base(kPlayerLeft, ts) => peerId = _peerId;
         public PlayerLeftMsg() : base() {}
+
+    }
+
+    public class NewGameMsg : AceMessage
+    {
+        // Hmm. Need to come up with a join/play/observe/whatever mechanism.
 
     }
 

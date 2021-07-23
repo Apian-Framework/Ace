@@ -47,14 +47,5 @@ namespace AceGameCode
             return ip2p;
         }
 
-        public override ApianMessage DeserializeApianMessage(string msgType, string msgJSON)
-        {
-            // TODO: can I do this without decoding it twice?
-            // One option would be for the deifnition of ApianMessage to have type and subType,
-            // but I'd rather just decode it smarter
-            //return AceApianMessageDeserializer.FromJSON(msgType, msgJSON);
-            throw new NotImplementedException();
-        }
-
     }
 }
