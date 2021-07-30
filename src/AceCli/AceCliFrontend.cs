@@ -24,6 +24,7 @@ namespace AceCli
             logger = UniLogger.GetLogger("Frontend");
         }
 
+        public void Foo() {} // placeholder. delete me.
 
         public virtual void Loop(float frameSecs)
         {

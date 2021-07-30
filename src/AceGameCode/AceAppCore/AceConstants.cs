@@ -2,6 +2,7 @@ namespace AceGameCode
 {
     public enum PlayerRole : int
     {
+        kNone = 0,
         kPlayer = 1,
         kValidator = 2,
     }

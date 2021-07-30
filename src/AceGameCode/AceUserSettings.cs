@@ -14,12 +14,7 @@ namespace AceGameCode
         public const string subFolder = ".ace";
         public const string defaultBaseName= "acesettings";
         public static string fileBaseName;
-        public static string path;
-
-        static UserSettingsMgr()
-        {
-            path = GetPath(subFolder);
-        }
+        public static string path  = GetPath(subFolder);
 
         public static AceUserSettings Load(string baseName = defaultBaseName)
         {

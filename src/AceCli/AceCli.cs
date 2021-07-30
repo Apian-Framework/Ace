@@ -7,7 +7,7 @@ using UniLog;
 
 namespace AceCli
 {
-    public class Program
+    public static class Program
     {
         public class CliOptions
         {
@@ -37,7 +37,7 @@ namespace AceCli
             public bool ThrowOnError {get; set;}
         }
 
-        protected static AceUserSettings GetSettings(string[] args)
+        public static AceUserSettings GetSettings(string[] args)
         {
             AceUserSettings settings = UserSettingsMgr.Load();
 
@@ -79,9 +79,9 @@ namespace AceCli
     {
         public long targetFrameMs {get; private set;} = 16;
 
-        public AceApplication appl = null;
-        public AceCliFrontend fe = null;
-        public AceGameNet gn = null;
+        public AceApplication appl;
+        public AceCliFrontend fe;
+        public AceGameNet gn;
 
 
         public void Run(AceUserSettings settings) {

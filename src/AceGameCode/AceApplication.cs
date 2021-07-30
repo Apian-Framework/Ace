@@ -5,14 +5,13 @@ using UniLog;
 
 namespace AceGameCode
 {
-    public interface IAceApplication
+    public interface IAceApplication : IApianApplication
     {
 
     }
 
     public class AceApplication
     {
-
 
 
     }
