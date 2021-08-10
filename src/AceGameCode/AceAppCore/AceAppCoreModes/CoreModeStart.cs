@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace AceGameCode
 {
-    public class ModePlay :AceGameMode
+    public class CoreModeStart : AceCoreMode
     {
 
     }

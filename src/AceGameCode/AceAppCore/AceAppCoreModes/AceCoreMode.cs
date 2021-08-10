@@ -5,7 +5,7 @@ using UniLog;
 
 namespace AceGameCode
 {
-    public class AceGameMode : IAppMode
+    public class AceCoreMode : IAppMode
     {
 		public AppModeManager manager;
 		public AceApplication appl;
@@ -16,17 +16,14 @@ namespace AceGameCode
 		{
 			// Called by manager before Start()
 			// Not virtual
-			// TODO: this should be the engine and not the modeMgr - but what IS an engine...
 			manager = mgr;
 			appl = gInst as AceApplication;
-			logger = UniLogger.GetLogger("AceGameMode");
+			logger = UniLogger.GetLogger("AceCoreMode");
         }
 
 		public virtual void Start( object param = null)	{
             logger.Info($"Starting {(ModeName())}");
         }
-
-		public virtual void Loop(float frameSecs) {}
 
 		public virtual void Pause() {}
 

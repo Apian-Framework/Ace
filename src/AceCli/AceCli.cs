@@ -145,7 +145,7 @@ namespace AceCli
             return false;
         }
 
-        private long _TimeMs() =>  DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        private static long _TimeMs() =>  DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
     }
 }

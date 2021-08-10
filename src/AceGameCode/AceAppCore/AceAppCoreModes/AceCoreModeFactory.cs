@@ -4,13 +4,13 @@ using ModalApplication;
 
 namespace AceGameCode
 {
-    public class AceModeFactory : AppModeFactory
+    public class AceCoreModeFactory : AppModeFactory
     {
-        public const int kPlay = 0;
-        public AceModeFactory()
+        public const int kStart = 0;
+        public AceCoreModeFactory()
         {
             AppModeCtors =  new Dictionary<int, Func<IAppMode>>  {
-                { kPlay, ()=> new ModePlay() },
+                { kStart, ()=> new CoreModeStart() },
             };
         }
     }
