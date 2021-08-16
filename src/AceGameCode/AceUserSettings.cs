@@ -69,9 +69,6 @@ namespace AceGameCode
         public string p2pConnectionString;
         public string ethNodeUrl;
         public string ethAcct;
-        public string localPlayerCtrlType;
-        public int aiBikeCount; // in addition to localPLayerBike, spawn this many AIs (and respawn to keep the number up)
-        public bool regenerateAiBikes; // create new ones when old ones get blown up
 
         public Dictionary<string, string> debugLevels;
         public Dictionary<string, string> tempSettings; // dict of cli-set, non-peristent values
@@ -91,9 +88,6 @@ namespace AceGameCode
             p2pConnectionString = source.p2pConnectionString;
             ethNodeUrl = source.ethNodeUrl;
             ethAcct = source.ethAcct;
-            localPlayerCtrlType = source.localPlayerCtrlType;
-            aiBikeCount = source.aiBikeCount;
-            regenerateAiBikes = source.regenerateAiBikes;
             debugLevels = source.debugLevels ?? new Dictionary<string, string>();
             tempSettings = source.tempSettings ?? new Dictionary<string, string>();
         }

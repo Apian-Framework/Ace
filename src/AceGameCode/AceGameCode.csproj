@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-   <ProjectReference Include="..\..\..\Apian.Net\src\Apian\Apian.csproj" />
+    <ProjectReference Include="..\..\..\ApianAppUtils\src\ModalApplication\ModalApplication.csproj" />
+    <ProjectReference Include="..\..\..\Apian.Net\src\Apian\Apian.csproj" />
     <ProjectReference Include="..\..\..\NotUnityEngine\src\NotUnityEngine\NotUnityEngine.csproj" Condition="'$(UNITY_2019_1_OR_NEWER)' == ''"/>
     <ProjectReference Include="..\..\..\UniLog\src\UniLog\UniLog.csproj" />
   </ItemGroup>

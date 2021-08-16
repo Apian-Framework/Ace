@@ -15,7 +15,7 @@ namespace AceGameCode
 
         public AceGameNet() : base()
         {
-
+            logger.Verbose($"Ctor: {this.GetType().Name}");
         }
 
         protected override IP2pNet P2pNetFactory(string p2pConnectionString)

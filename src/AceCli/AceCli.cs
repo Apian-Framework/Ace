@@ -17,11 +17,6 @@ namespace AceCli
             public string GameSpec {get; set;}
 
             [Option(
-	            Default = -1,
-	            HelpText = "(persistent) Start with this GameMode")]
-            public int StartMode {get; set;}
-
-            [Option(
 	            Default = null,
 	            HelpText = "User settings basename (Default: acesettings)")]
             public string Settings {get; set;}
@@ -56,9 +51,6 @@ namespace AceCli
                         if (o.GameSpec != null)
                             settings.tempSettings["gameSpec"] = o.GameSpec;
 
-                       if (o.StartMode != -1)
-                            settings.startMode = o.StartMode;
-
                     });
 
             UserSettingsMgr.Save(settings);
@@ -77,7 +69,7 @@ namespace AceCli
 
     public class CliDriver
     {
-        public long targetFrameMs {get; private set;} = 16;
+        public long targetFrameMs {get; private set;} = 60; // FIXME: should just be for frontend
 
         public AceApplication appl;
         public AceCliFrontend fe;
@@ -91,10 +83,10 @@ namespace AceCli
 
         protected void Init(AceUserSettings settings)
         {
-            // fe = new AceCliFrontend(settings);
-            // gn = new AceGameNet();
-            // appl = new AceApplication(gn, fe);
-            // appl.Start(settings.startMode);
+            fe = new AceCliFrontend(settings);
+            gn = new AceGameNet();
+            appl = new AceApplication(gn, fe);
+            appl.Start(settings.startMode);
         }
 
         protected void LoopUntilDone()
@@ -121,29 +113,11 @@ namespace AceCli
 
         protected bool Loop(int frameMs)
         {
-            // first dispatch incoming messages
-            // while not self.netCmdQueue.empty():
-            //     cmd = self.netCmdQueue.get(block=False)
-            //     if cmd:
-            //         self._dispatch_net_cmd(cmd)
-            //         ge_sleep(0)  # yield
-
-
-            // while not self.feMsgQueue.empty():
-            //     cmd = self.feMsgQueue.get(block=False)
-            //     if cmd:
-            //         self._dispatch_fe_cmd(cmd)
-            //         ge_sleep(0)  # yield
-
-            // then update the game
-
-            // float frameSecs = (float)frameMs / 1000f;
-            // gn.Loop();
-            // fe.Loop(frameSecs);
-            // return appl.Loop(frameSecs);
-
-            return false;
-        }
+            float frameSecs = (float)frameMs / 1000f;
+            gn.Update();
+            fe.Loop(frameSecs);
+            return appl.IsRunning;
+       }
 
         private static long _TimeMs() =>  DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
