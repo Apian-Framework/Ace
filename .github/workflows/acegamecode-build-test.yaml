@@ -41,6 +41,12 @@ jobs:
         repository: Apian-Framework/UniLog
         path: UniLog
 
+    - name: Checkout dependencies (ApianAppUtils)
+      uses: actions/checkout@v2
+      with:
+        repository: Apian-Framework/ApianAppUtils
+        path: ApianAppUtils
+
     - name: Checkout dependencies (NotUnityEngine)
       uses: actions/checkout@v2
       with:
