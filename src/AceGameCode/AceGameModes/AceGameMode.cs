@@ -9,6 +9,7 @@ namespace AceGameCode
     {
 		public AppModeManager manager;
 		public AceApplication appl;
+
 		public UniLogger logger;
 		public int ModeId() => manager.CurrentModeId();
 
@@ -36,6 +37,13 @@ namespace AceGameCode
 
 		public virtual object End() => null;
         public virtual string ModeName() => this.GetType().Name;
+
+		public void ExitAbruptly(string message)
+		{
+			appl.frontend.DisplayMessage(MessageSeverity.Error, message);
+			logger.Error(message);
+			manager.Stop();
+		}
 
     }
 }
