@@ -14,7 +14,7 @@ namespace AceGameCode
         public PlayerRole Role { get; private set;}
         public PlaneColor Team { get; private set;}
 
-        public AcePlayer(string peerId, string name, PlayerRole role, PlaneColor team = PlaneColor.kNone)
+        public AcePlayer(string peerId, string name, PlayerRole role = PlayerRole.kNone, PlaneColor team = PlaneColor.kNone)
         {
             PeerId = peerId;
             Name = name;

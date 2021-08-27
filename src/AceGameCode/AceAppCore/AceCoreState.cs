@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Apian;
 using UniLog;
 using static UniLog.UniLogger; // for SID()
@@ -10,28 +12,54 @@ namespace AceGameCode
     public class AceCoreState : ApianCoreState
     {
         // Actual State Data
-        public Dictionary<string, AcePlayer> PlayersById { get; private set; }
+        public Dictionary<string, AcePlayer> Players { get; private set; }
         public Dictionary<string, AcePlane> PlanesById { get; private set; }
         public AceBoard Board { get; private set; }
         public AcePlayer CurrentPlayer { get; private set;}
 
         // Ephemeral/calculated stuff
-        public UniLogger Logger;
 
         public AceCoreState()
         {
-            Logger = UniLogger.GetLogger("GameState");
-            PlayersById = new Dictionary<string, AcePlayer>();
+             Players = new Dictionary<string, AcePlayer>();
         }
+
+        public class SerialArgs
+        {
+            public long cmdSeqNum;
+            public SerialArgs(long sn ) {cmdSeqNum=sn; }
+        };
 
         public override string ApianSerialized(object args=null)
         {
-            return null;
+            // // create array index lookups for peers, bikes to replace actual IDs (which are long) in serialized data
+            // Dictionary<string,int> peerIndicesDict =  Players.Values.OrderBy(p => p.PeerId)
+            //     .Select((p,idx) => new {p.PeerId, idx}).ToDictionary( x =>x.PeerId, x=>x.idx);
+
+            // State data
+            string[] playersData = Players.Values.OrderBy(p => p.PeerId)
+                .Select(p => p.ApianSerialized()).ToArray();
+
+            return  JsonConvert.SerializeObject(new object[]{
+                ApianSerializedBaseData(), // serialize all of the AppCoreBase data
+                playersData
+            });
         }
 
         public static AceCoreState FromApianSerialized( long seqNum,  string stateHash,  string serializedData)
         {
             AceCoreState newState = new AceCoreState();
+
+            JArray sData = JArray.Parse(serializedData);
+
+            newState.ApplyDeserializedBaseData((string)sData[0]); // Populate the base ApianCoreState  data
+
+            Dictionary<string, AcePlayer> newPlayers = (sData[1] as JArray)
+                .Select( s => AcePlayer.FromApianJson((string)s))
+                .ToDictionary(p => p.PeerId);
+
+            newState.Players = newPlayers;
+
             return newState;
         }
 
