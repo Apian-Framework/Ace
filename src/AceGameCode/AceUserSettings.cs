@@ -67,16 +67,20 @@ namespace AceGameCode
         public int startMode;
         public string screenName;
         public string p2pConnectionString;
+        public string apianNetworkName;
         public string ethNodeUrl;
         public string ethAcct;
+        public string defaultLogLevel;
 
-        public Dictionary<string, string> debugLevels;
+        public Dictionary<string, string> logLevels;
         public Dictionary<string, string> tempSettings; // dict of cli-set, non-peristent values
+        public Dictionary<string, string> platformSettings; // dict of persistent, but platform-specific, settings
 
         public AceUserSettings()
         {
-            debugLevels = new Dictionary<string, string>();
+            logLevels = new Dictionary<string, string>();
             tempSettings = new Dictionary<string, string>();
+            platformSettings = new Dictionary<string, string>();
         }
 
         public AceUserSettings(AceUserSettings source)
@@ -86,21 +90,31 @@ namespace AceGameCode
             startMode = source.startMode;
             screenName = source.screenName;
             p2pConnectionString = source.p2pConnectionString;
+            apianNetworkName = source.apianNetworkName;
             ethNodeUrl = source.ethNodeUrl;
             ethAcct = source.ethAcct;
-            debugLevels = source.debugLevels ?? new Dictionary<string, string>();
+            defaultLogLevel = source.defaultLogLevel;
+            logLevels = source.logLevels ?? new Dictionary<string, string>();
             tempSettings = source.tempSettings ?? new Dictionary<string, string>();
+            platformSettings = source.platformSettings ?? new Dictionary<string, string>();
         }
 
         public static AceUserSettings CreateDefault()
         {
             return new AceUserSettings() {
                 version = UserSettingsMgr.currentVersion,
-                debugLevels = new Dictionary<string, string>() {
+                screenName = "Fred Sanford",
+                p2pConnectionString = "p2predis::newsweasel.com,password=O98nfRVWYYHg7rXpygBCBZWl+znRATaRXTC469SafZU",
+                apianNetworkName = "AceNet1",
+                ethNodeUrl = "https://rinkeby.infura.io/v3/7653fb1ed226443c98ce85d402299735",
+                ethAcct = "0x2b42eBD222B5a1134e85D78613078740eE3Cc93D",
+                defaultLogLevel = "Warn",
+                logLevels = new Dictionary<string, string>() {
                     {"UserSettings", UniLogger.LevelNames[UniLogger.Level.Info]},
                     {"GameInstance", UniLogger.LevelNames[UniLogger.Level.Warn]},
                 },
-                tempSettings = new Dictionary<string, string>()
+                tempSettings = new Dictionary<string, string>(),
+                platformSettings = new Dictionary<string, string>()
             };
         }
     }

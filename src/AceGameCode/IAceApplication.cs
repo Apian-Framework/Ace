@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apian;
+using GameNet;
 
 namespace AceGameCode
 {
@@ -36,14 +39,20 @@ namespace AceGameCode
 
     public interface IAceApplication : IApianApplication
     {
-        IAceGameNet aceGameNet {get;}
-
-        void ExitApplication(); // relatively controlled exit via modeMgr
-
         // Events
         event EventHandler<PeerJoinedEventArgs> PeerJoinedEvt;
         event EventHandler<PeerLeftEventArgs> PeerLeftEvt;
         event EventHandler<GameAnnounceEventArgs> GameAnnounceEvt;
+
+        IAceGameNet aceGameNet {get;}
+
+        void ConnectToNetwork(string netConnectionStr);
+        Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string networkName);
+        Task<Dictionary<string, AceGameInfo>> GetExistingGamesAsync(int waitMs);
+        Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames);
+        void ExitApplication(); // relatively controlled exit via modeMgr
+
+
 
     }
 

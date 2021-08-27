@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Apian;
 using ModalApplication;
@@ -47,9 +50,54 @@ namespace AceGameCode
         public bool IsRunning {get => appModeMgr.CurrentModeId() != -1;}
 
         // IAceApplication
+
+        public void ConnectToNetwork(string netConnectionStr)
+        {
+           // Connect is (for now) synchronous
+            aceGameNet.Connect(netConnectionStr);
+        }
+        public async Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string networkName)
+        {
+            _CreateLocalPeer(); // takes data from settings and p2p instance
+            return await aceGameNet.JoinGameNetworkAsync(networkName, LocalPeer);
+        }
+
+        public async Task<Dictionary<string, AceGameInfo>> GetExistingGamesAsync(int waitMs)
+        {
+            Dictionary<string, ApianGroupInfo> groupsDict = await aceGameNet.RequestGroupsAsync(waitMs);
+            Dictionary<string, AceGameInfo> gameDict = groupsDict.Values.Select((grp) => new AceGameInfo(grp)).ToDictionary(gm => gm.GameName, gm => gm);
+            Logger.Info($"GetExistingGamesAsync() Got result:\n  {string.Join(Environment.NewLine, gameDict)}");
+            return gameDict;
+        }
+
+        public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames)
+        {
+            GameSelectedEventArgs selection = await frontend.SelectGameAsync(existingGames);
+            Logger.Info($"SelectGameAsync() Got result:  GameName: {selection.gameInfo.GameName} ResultCode: {selection.result}");
+            return selection;
+        }
+
+        protected AcePlayer MakeAcePlayer() => new AcePlayer(LocalPeer.PeerId, LocalPeer.Name);
+        // FIXME: I think maybe it should go in BeamGameNet?
+
+        public void CreateAndJoinGame(AceGameInfo gameInfo, AceAppCore appCore)
+        {
+            aceGameNet.CreateAndJoinGame(gameInfo, appCore.AceApian, MakeAcePlayer().ApianSerialized() );
+        }
+       public void JoinExistingGame(AceGameInfo gameInfo, AceAppCore appCore)
+        {
+            aceGameNet.JoinExistingGame(gameInfo, appCore.AceApian, MakeAcePlayer().ApianSerialized() );
+        }
+
         public void ExitApplication()
         {
             appModeMgr.Stop();
+        }
+
+        private void _CreateLocalPeer()
+        {
+            AceUserSettings settings = frontend.GetUserSettings();
+            LocalPeer = new AceNetworkPeer(aceGameNet.LocalP2pId(), settings.screenName);
         }
 
         // IApianApplication
