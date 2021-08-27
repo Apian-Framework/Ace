@@ -20,8 +20,8 @@ namespace AceGameCodeTests
 
             Assert.That(cs, Is.Not.Null);
             Assert.That(cs.Logger, Is.InstanceOf<UniLogger>());
-            Assert.That(cs.PlayersById, Is.InstanceOf<Dictionary<string,AcePlayer>>());
-            Assert.That(cs.PlayersById.Count, Is.EqualTo(0));
+            Assert.That(cs.Players, Is.InstanceOf<Dictionary<string,AcePlayer>>());
+            Assert.That(cs.Players.Count, Is.EqualTo(0));
         }
     }
 

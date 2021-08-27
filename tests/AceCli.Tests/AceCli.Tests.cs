@@ -33,7 +33,7 @@ namespace AceCliTests
             long tfms = drv.targetFrameMs;
 
             Assert.That(drv, Is.Not.Null);
-            Assert.That(tfms, Is.EqualTo(60)); // FIXME - this is a silly and fragile test
+            Assert.That(tfms, Is.EqualTo(250)); // FIXME - this is a silly and fragile test
         }
 
         [Test]
