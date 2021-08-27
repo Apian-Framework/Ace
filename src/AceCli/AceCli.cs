@@ -13,18 +13,38 @@ namespace AceCli
         {
             [Option(
 	            Default = null,
-	            HelpText = "Join this game")]
-            public string GameSpec {get; set;}
+	            HelpText = "Join this game. Else create a game")]
+            public string GameName {get; set;}
 
             [Option(
 	            Default = null,
-	            HelpText = "User settings basename (Default: acesettings)")]
+	            HelpText = "Apian Network name" )]
+            public string NetName {get; set;}
+
+            [Option(
+	            Default = null,
+	            HelpText = "Apian Group consensus mechanism (if creating)" )]
+            public string GroupType {get; set;}
+
+            [Option(
+	            Default = -1,
+	            HelpText = "Start with this GameMode" )]
+            public int StartMode {get; set;}
+
+            [Option(
+	            Default = null,
+	            HelpText = "User settings file basename (Default: beamsettings)")]
             public string Settings {get; set;}
 
             [Option(
 	            Default = false,
 	            HelpText = "Force default user settings (other than CLI options")]
             public bool ForceDefaultSettings {get; set;}
+
+            [Option(
+	            Default = null,
+	            HelpText = "(Default: Warn) Default log level.")]
+            public string DefLogLvl {get; set;}
 
             [Option(
 	            Default = false,
@@ -36,7 +56,7 @@ namespace AceCli
         {
             AceUserSettings settings = UserSettingsMgr.Load();
 
-            Parser.Default.ParseArguments<CliOptions>(args)
+                Parser.Default.ParseArguments<CliOptions>(args)
                     .WithParsed<CliOptions>(o =>
                     {
                         if (o.Settings != null)
@@ -48,19 +68,36 @@ namespace AceCli
                         if (o.ThrowOnError)
                             UniLogger.DefaultThrowOnError = true;
 
-                        if (o.GameSpec != null)
-                            settings.tempSettings["gameSpec"] = o.GameSpec;
+                        if (o.DefLogLvl != null)
+                            settings.defaultLogLevel = o.DefLogLvl;
 
+                        if (o.NetName != null)
+                            settings.apianNetworkName = o.NetName;
+
+                        if (o.GameName != null)
+                            settings.tempSettings["gameName"] = o.GameName;
+
+                        if (o.GroupType != null)
+                            settings.tempSettings["groupType"] = o.GroupType;
+
+                       if (o.StartMode != -1)
+                            settings.startMode = o.StartMode;
+
+                    }).WithNotParsed(o =>
+                    {
+                        // --help, --version, or any error results in this getting called
+                        settings = null;
                     });
 
-            UserSettingsMgr.Save(settings);
+            if (settings != null)
+                UserSettingsMgr.Save(settings);
             return settings;
         }
 
         static void Main(string[] args)
         {
             AceUserSettings settings = GetSettings(args);
-            UniLogger.SetupLevels(settings.debugLevels);
+            UniLogger.SetupLevels(settings.logLevels);
             CliDriver drv = new CliDriver();
             drv.Run(settings);
         }
@@ -69,12 +106,13 @@ namespace AceCli
 
     public class CliDriver
     {
-        public long targetFrameMs {get; private set;} = 60; // FIXME: should just be for frontend
+        public long targetFrameMs {get; private set;} = 250; // FIXME: should just be for frontend
 
         public AceApplication appl;
         public AceCliFrontend fe;
         public AceGameNet gn;
 
+        public UniLogger Logger {get; private set;}
 
         public void Run(AceUserSettings settings) {
             Init(settings);
@@ -83,6 +121,7 @@ namespace AceCli
 
         protected void Init(AceUserSettings settings)
         {
+            Logger = UniLogger.GetLogger("CliDriver");
             fe = new AceCliFrontend(settings);
             gn = new AceGameNet();
             appl = new AceApplication(gn, fe);
@@ -104,7 +143,7 @@ namespace AceCli
 
                 // wait to maintain desired rate
                 int waitMs = (int)(targetFrameMs - elapsedMs);
-                //UnityEngine.Debug.Log(string.Format("Elapsed ms: {0}, Wait ms: {1}",elapsedMs, waitMs));
+                Logger.Debug($"Elapsed ms: {elapsedMs}, Wait ms: {waitMs}");
                 if (waitMs <= 0)
                     waitMs = 1;
                 Thread.Sleep(waitMs);
@@ -113,8 +152,10 @@ namespace AceCli
 
         protected bool Loop(int frameMs)
         {
+            Logger.Debug($"Loop( {frameMs} )");
             float frameSecs = (float)frameMs / 1000f;
             gn.Update();
+            // bool keepRunning = appl.Loop(frameSecs); // Do game code loop
             fe.Loop(frameSecs);
             return appl.IsRunning;
        }
