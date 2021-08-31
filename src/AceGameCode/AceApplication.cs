@@ -77,16 +77,42 @@ namespace AceGameCode
             return selection;
         }
 
-        protected AcePlayer MakeAcePlayer() => new AcePlayer(LocalPeer.PeerId, LocalPeer.Name);
-        // FIXME: I think maybe it should go in BeamGameNet?
+        public AcePlayer MakeDefaultAcePlayer()
+        {
+            return MakeAiAcePlayer();
+            //return  new AcePlayer(
+                // Guid.NewGuid().ToString(),
+                // AcePlayer.LoaclPlayerCtrl,
+                // LocalPeer.Name,
+                // LocalPeer.PeerId,
+                // PlayerRole.kPlayer );
+        }
+
+
+
+        public AcePlayer MakeAiAcePlayer()
+        {
+            return  new AcePlayer(
+                Guid.NewGuid().ToString(),
+                AcePlayer.AiCtrl,
+                AceDemoData.RandomName(),
+                LocalPeer.PeerId,
+                PlayerRole.kPreferPlayer );
+        }
+
 
         public void CreateAndJoinGame(AceGameInfo gameInfo, AceAppCore appCore)
         {
-            aceGameNet.CreateAndJoinGame(gameInfo, appCore.AceApian, MakeAcePlayer().ApianSerialized() );
+            aceGameNet.CreateAndJoinGame(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
         }
        public void JoinExistingGame(AceGameInfo gameInfo, AceAppCore appCore)
         {
-            aceGameNet.JoinExistingGame(gameInfo, appCore.AceApian, MakeAcePlayer().ApianSerialized() );
+            aceGameNet.JoinExistingGame(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
+        }
+
+        public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
+        {
+            aceGameNet.SendNewPlayerRequest(gameId, newPlayer);
         }
 
         public void ExitApplication()

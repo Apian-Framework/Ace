@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Apian;
 using P2pNet;
 using GameNet;
+using static UniLog.UniLogger; // for SID()
 
 namespace AceGameCode
 {
@@ -13,6 +14,7 @@ namespace AceGameCode
         AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType);
         void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData);
         void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData );
+        void SendNewPlayerRequest(string gameId, AcePlayer newPlayer);
 
     }
 
@@ -115,6 +117,14 @@ namespace AceGameCode
             string beamNetworkHelloData = JsonConvert.SerializeObject(localPeer);
             return await JoinNetworkAsync(chan, beamNetworkHelloData);
         }
+
+        public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
+        {
+            logger.Info($"SendNewPlayerRequest(): {SID(newPlayer?.PlayerId)}");
+            AceApian apian = ApianInstances[gameId] as AceApian;
+            apian.SendNewPlayerRequest(newPlayer);
+        }
+
 
     }
 }

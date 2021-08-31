@@ -84,13 +84,13 @@ namespace AceGameCode
         public override void OnPeerMissing(string channelId, string p2pId)
         {
             Logger.Warn($"Peer: {SID(p2pId)} is missing!");
-            appCore.OnPlayerMissing(channelId, p2pId);
+            appCore.OnPeerMissing(channelId, p2pId);
         }
 
         public override void OnPeerReturned(string channelId, string p2pId)
         {
             Logger.Warn($"Peer: {SID(p2pId)} has returned!");
-            appCore.OnPlayerReturned(channelId, p2pId);
+            appCore.OnPeerReturned(channelId, p2pId);
         }
 
 
@@ -192,6 +192,13 @@ namespace AceGameCode
             Logger.Debug($"SendPlayerLeftObs()");
             PlayerLeftMsg msg = new PlayerLeftMsg(timeStamp, peerId);
             SendObservation( msg);
+        }
+
+        public void SendNewPlayerRequest(AcePlayer newPlayer)
+        {
+            Logger.Debug($"SendNewPlayerRequest()");
+            NewPlayerMsg msg = new NewPlayerMsg(ApianClock.CurrentTime, newPlayer);
+            SendRequest(msg);
         }
     }
 }

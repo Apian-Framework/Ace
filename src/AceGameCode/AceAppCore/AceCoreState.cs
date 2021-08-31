@@ -12,7 +12,7 @@ namespace AceGameCode
     public class AceCoreState : ApianCoreState
     {
         // Actual State Data
-        public Dictionary<string, AcePlayer> Players { get; private set; }
+        public Dictionary<string, AcePlayer> Players { get; private set; } // keyed by PlayerId (not peer)
         public Dictionary<string, AcePlane> PlanesById { get; private set; }
         public AceBoard Board { get; private set; }
         public AcePlayer CurrentPlayer { get; private set;}
@@ -32,12 +32,9 @@ namespace AceGameCode
 
         public override string ApianSerialized(object args=null)
         {
-            // // create array index lookups for peers, bikes to replace actual IDs (which are long) in serialized data
-            // Dictionary<string,int> peerIndicesDict =  Players.Values.OrderBy(p => p.PeerId)
-            //     .Select((p,idx) => new {p.PeerId, idx}).ToDictionary( x =>x.PeerId, x=>x.idx);
 
             // State data
-            string[] playersData = Players.Values.OrderBy(p => p.PeerId)
+            string[] playersData = Players.Values.OrderBy(p => p.PlayerId)
                 .Select(p => p.ApianSerialized()).ToArray();
 
             return  JsonConvert.SerializeObject(new object[]{
@@ -56,7 +53,7 @@ namespace AceGameCode
 
             Dictionary<string, AcePlayer> newPlayers = (sData[1] as JArray)
                 .Select( s => AcePlayer.FromApianJson((string)s))
-                .ToDictionary(p => p.PeerId);
+                .ToDictionary(p => p.PlayerId);
 
             newState.Players = newPlayers;
 
