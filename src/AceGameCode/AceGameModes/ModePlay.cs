@@ -72,6 +72,7 @@ namespace AceGameCode
                     appCore = CreateCorePair(gameInfo);
                     appl.AddAppCore(appCore);
                     appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
+                    appCore.Start(AceCoreModeFactory.kStart );
                 }
 
                 switch (result)
@@ -94,14 +95,6 @@ namespace AceGameCode
                     break;
                 }
             }
-        }
-
-        protected AceAppCore CreateCorePair(AceGameInfo gameInfo)
-        {
-            // Create gameinstance and ApianInstance
-            AceAppCore appCore = new AceAppCore();
-            AceApian apian = AceApianFactory.Create(gameInfo.GroupInfo.GroupType, appl.aceGameNet, appCore);
-            return appCore;
         }
 
         // AppCore event handlers

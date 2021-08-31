@@ -44,6 +44,13 @@ namespace AceGameCode
 			logger.Error(message);
 			manager.Stop();
 		}
+        protected AceAppCore CreateCorePair(AceGameInfo gameInfo)
+        {
+            // Create gameinstance and ApianInstance
+            AceAppCore appCore = new AceAppCore();
+            AceApian apian = AceApianFactory.Create(gameInfo.GroupInfo.GroupType, appl.aceGameNet, appCore);
+            return appCore;
+        }
 
     }
 }
