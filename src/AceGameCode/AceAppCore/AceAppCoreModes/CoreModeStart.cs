@@ -9,6 +9,9 @@ namespace AceGameCode
 {
     public class CoreModeStart : AceCoreMode
     {
+		public override void Start( object param = null)	{
+            base.Start();
+        }
 
     }
 }

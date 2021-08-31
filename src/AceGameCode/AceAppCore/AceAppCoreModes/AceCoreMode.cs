@@ -8,6 +8,7 @@ namespace AceGameCode
     public class AceCoreMode : IAppMode
     {
 		public AppModeManager manager;
+		public AceAppCore AppCore { get; private set; }
 		public AceApplication appl;
 		public UniLogger logger;
 		public int ModeId() => manager.CurrentModeId();
