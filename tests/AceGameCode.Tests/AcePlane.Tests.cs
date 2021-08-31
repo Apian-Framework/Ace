@@ -22,7 +22,7 @@ namespace AceGameCodeTests
             const string name = "aName";
             const string ctrl = "ai";
             Vector2 pos = new Vector2( 3, 7);
-            PlaneOrientation orientation = PlaneOrientation.kDownRight;
+            PlaneOrientation orientation = PlaneOrientation.kUp;
 
             AcePlane pl = new AcePlane(planeId, playerId, name, ctrl, pos, orientation);
 
