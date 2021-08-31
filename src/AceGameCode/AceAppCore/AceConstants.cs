@@ -5,10 +5,11 @@ namespace AceGameCode
         kNone = 0,
         kPlayer = 1,
         kValidator = 2,
+        kPreferPlayer= 3, // This is a "desired role": Player if available, if not then validator.
     }
     public enum PlaneColor : int
     {
-        kNone = 0,
+        kNone = 0, // None for "I don't care"
         kRed = 1,
         kBlue = 2,
 
@@ -21,15 +22,15 @@ namespace AceGameCode
 
     public enum PlaneOrientation
     {
-        // From the plane's side of the board, clockwise
+        // From the North side of the board looking thru it South, East is to the left.
         kUp = 0,
-        kUpRight = 1,
-        kRight = 2,
-        kDownRight=3,
+        kUpWest = 1,
+        kWest = 2,
+        kDownWest = 3,
         kDown = 4,
-        kDownLeft = 5,
-        kLeft = 6,
-        kUpLeft = 7,
+        kDownEast = 5,
+        kEast = 6,
+        kUpEast = 7,
         kConcealed = 8
     }
 }

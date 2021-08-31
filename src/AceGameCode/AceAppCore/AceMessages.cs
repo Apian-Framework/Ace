@@ -22,6 +22,11 @@ namespace AceGameCode
 
     public class NewPlayerMsg : AceMessage
     {
+        // When initially sent as a request, Role and team are
+        // the *desired* role and team - they may not be what you get.
+        // In the case of "role" if you request one and don't get what you want
+        // then you leave the game.
+        // TODO: make this work
         public AcePlayer newPlayer;
         public NewPlayerMsg(long ts, AcePlayer _newPlayer) : base(kNewPlayer, ts) => newPlayer = _newPlayer;
         public NewPlayerMsg() : base() {}
@@ -35,11 +40,16 @@ namespace AceGameCode
 
     }
 
-    public class NewGameMsg : AceMessage
-    {
-        // Hmm. Need to come up with a join/play/observe/whatever mechanism.
+    // public class NewGameMsg : AceMessage
+    // {
+    //     public string PlayerId;
+    //     public PlayerRole DesiredRole;
+    //     public PlaneColor DesiredTeam;
 
-    }
+    //     public NewGameMsg(long ts, string playerId) : base(kNewGame, ts) => PlayerId = _peerId;
+    //     public NewGameMsg() : base() {}
+
+    // }
 
     public class PlacePlaneMsg : AceMessage
     {
@@ -84,6 +94,7 @@ namespace AceGameCode
          public static Dictionary<string, Func<string, ApianCoreMessage>> aceDeserializers = new  Dictionary<string, Func<string, ApianCoreMessage>>()
          {
             {AceMessage.kNewPlayer, (s) => JsonConvert.DeserializeObject<NewPlayerMsg>(s) },
+
             {AceMessage.kPlayerLeft, (s) => JsonConvert.DeserializeObject<PlayerLeftMsg>(s) },
             {AceMessage.kPlacePlane, (s) => JsonConvert.DeserializeObject<PlacePlaneMsg>(s) },
             {AceMessage.kMovePlane, (s) => JsonConvert.DeserializeObject<MovePlaneMsg>(s) },

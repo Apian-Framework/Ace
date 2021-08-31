@@ -11,7 +11,10 @@ namespace AceGameCode
     {
         public ApianGroupInfo GroupInfo;
         public string GameName { get => GroupInfo.GroupName; }
-        public AceGameInfo(ApianGroupInfo agi) { GroupInfo = agi; }
+        public AceGameInfo(ApianGroupInfo agi)
+        {
+            GroupInfo = agi;
+         }
     }
 
     public class PeerJoinedEventArgs : EventArgs {
