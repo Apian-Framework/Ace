@@ -6,16 +6,16 @@ using GameNet;
 
 namespace AceGameCode
 {
-
-    public class AceGameInfo
+    public class AceGameInfo : ApianGroupInfo
     {
-        public ApianGroupInfo GroupInfo;
-        public string GameName { get => GroupInfo.GroupName; }
-        public AceGameInfo(ApianGroupInfo agi)
-        {
-            GroupInfo = agi;
-         }
+        public string GameName { get => GroupName; }
+        public int MinValidators { get => int.Parse(GroupParams["MinValidators"]); }
+        public int MaxValidators { get => int.Parse(GroupParams["MaxValidators"]); }
+        public AceGameInfo(ApianGroupInfo agi) : base(agi) {}
     }
+
+
+
 
     public class PeerJoinedEventArgs : EventArgs {
         public string channelId;

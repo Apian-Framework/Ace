@@ -38,7 +38,12 @@ namespace AceGameCode
                 await appl.JoinGameNetworkAsync(kNetworkName);
                 logger.Info("Local splash network joined");
 
-                AceGameInfo gameInfo = appl.aceGameNet.CreateAceGameInfo(kApianGroupName, SinglePeerGroupManager.kGroupType);
+                AceGameInfo gameInfo = appl.aceGameNet.CreateAceGameInfo(
+                    kApianGroupName,
+                    SinglePeerGroupManager.kGroupType,
+                    kTotalPlayers - 2,  // min validators
+                    kTotalPlayers - 2   // max validators
+                    );
 
                 SplashAppCore = CreateCorePair(gameInfo);
                 appl.AddAppCore(SplashAppCore);
@@ -59,11 +64,11 @@ namespace AceGameCode
         {
             bool isLocal = ga.player.PeerId == appl.LocalPeer.PeerId;
             logger.Info($"{(ModeName())} - OnPlayerJoinedEvt() - {(isLocal?"Local":"Remote")} Member Joined: {ga.player.Name}, ID: {SID(ga.player.PlayerId)}");
-            if (ga.player.PeerId == appl.LocalPeer.PeerId)
-            {
-                if ( SplashAppCore.CoreState.Players.Count < kTotalPlayers)
-                    appl.SendNewPlayerRequest(SplashAppCore.ApianGroupId, appl.MakeAiAcePlayer());
-            }
+
+            // Need to create any more?
+            if ( SplashAppCore.CoreState.Players.Count < kTotalPlayers)
+                appl.SendNewPlayerRequest(SplashAppCore.ApianGroupId, appl.MakeAiAcePlayer());
+
         }
 
     }

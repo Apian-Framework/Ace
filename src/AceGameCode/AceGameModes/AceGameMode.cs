@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ModalApplication;
+using Apian;
 using UniLog;
 
 namespace AceGameCode
@@ -48,7 +49,7 @@ namespace AceGameCode
         {
             // Create gameinstance and ApianInstance
             AceAppCore appCore = new AceAppCore();
-            AceApian apian = AceApianFactory.Create(gameInfo.GroupInfo.GroupType, appl.aceGameNet, appCore);
+            AceApian apian = AceApianFactory.Create(gameInfo.GroupType, appl.aceGameNet, appCore);
             return appCore;
         }
 

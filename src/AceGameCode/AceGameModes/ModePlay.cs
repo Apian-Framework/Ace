@@ -54,7 +54,7 @@ namespace AceGameCode
         {
             AceGameInfo gameInfo = args.gameInfo;
             GameSelectedEventArgs.ReturnCode result = args.result;
-            string gameName = gameInfo?.GameName;
+            string gameName = gameInfo?.GroupName;
 
             logger.Info($"{(ModeName())} - OnGameSelected(): {gameName}, result: {result}");
 

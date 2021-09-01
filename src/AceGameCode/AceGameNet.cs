@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Apian;
@@ -11,7 +12,7 @@ namespace AceGameCode
     public interface IAceGameNet : IApianGameNet
     {
         Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string netName, AceNetworkPeer localPeer);
-        AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType);
+        AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators);
         void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData);
         void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData );
         void SendNewPlayerRequest(string gameId, AcePlayer newPlayer);
@@ -38,7 +39,7 @@ namespace AceGameCode
             logger.Verbose($"Ctor: {this.GetType().Name}");
         }
 
-        public AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType)
+        public AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators)
         {
            string netName = p2p.GetMainChannel()?.Name;
             if (netName == null)
@@ -53,6 +54,9 @@ namespace AceGameCode
 
             ApianGroupInfo groupInfo = new ApianGroupInfo(apianGroupType, groupChanInfo, LocalP2pId(), gameName);
 
+            groupInfo.GroupParams["MinValidators"] = $"{minValidators}";
+            groupInfo.GroupParams["MaxValidators"] = $"{maxValidators}";
+
             return new AceGameInfo(groupInfo);
         }
 
@@ -65,7 +69,7 @@ namespace AceGameCode
                 return;
             }
 
-            base.JoinExistingGroup(gameInfo.GroupInfo, apian, localData);
+            base.JoinExistingGroup(gameInfo, apian, localData);
         }
 
         public void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData)
@@ -77,7 +81,7 @@ namespace AceGameCode
                 return;
             }
 
-            base.CreateAndJoinGroup(gameInfo.GroupInfo, apian, localData);
+            base.CreateAndJoinGroup(gameInfo, apian, localData);
 
         }
 

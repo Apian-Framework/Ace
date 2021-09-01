@@ -65,7 +65,7 @@ namespace AceGameCode
         public async Task<Dictionary<string, AceGameInfo>> GetExistingGamesAsync(int waitMs)
         {
             Dictionary<string, ApianGroupInfo> groupsDict = await aceGameNet.RequestGroupsAsync(waitMs);
-            Dictionary<string, AceGameInfo> gameDict = groupsDict.Values.Select((grp) => new AceGameInfo(grp)).ToDictionary(gm => gm.GameName, gm => gm);
+            Dictionary<string, AceGameInfo> gameDict = groupsDict.Values.Select((grp) => new AceGameInfo(grp)).ToDictionary(gm => gm.GroupName, gm => gm);
             Logger.Info($"GetExistingGamesAsync() Got result:\n  {string.Join(Environment.NewLine, gameDict)}");
             return gameDict;
         }
@@ -73,7 +73,7 @@ namespace AceGameCode
         public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames)
         {
             GameSelectedEventArgs selection = await frontend.SelectGameAsync(existingGames);
-            Logger.Info($"SelectGameAsync() Got result:  GameName: {selection.gameInfo.GameName} ResultCode: {selection.result}");
+            Logger.Info($"SelectGameAsync() Got result:  GameName: {selection.gameInfo.GroupName} ResultCode: {selection.result}");
             return selection;
         }
 
@@ -136,8 +136,8 @@ namespace AceGameCode
         public void OnGroupAnnounce(ApianGroupInfo groupInfo)
         {
             Logger.Info($"OnGroupAnnounce({groupInfo?.GroupName})");
-            AceGameInfo bgi = new AceGameInfo(groupInfo);
-            GameAnnounceEvt?.Invoke(this, new GameAnnounceEventArgs(bgi));
+            AceGameInfo agi = new AceGameInfo(groupInfo);
+            GameAnnounceEvt?.Invoke(this, new GameAnnounceEventArgs(agi));
         }
         public void OnGroupMemberStatus(string groupId, string peerId, ApianGroupMember.Status newStatus, ApianGroupMember.Status prevStatus)
         {
