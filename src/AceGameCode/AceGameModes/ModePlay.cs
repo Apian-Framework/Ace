@@ -72,6 +72,7 @@ namespace AceGameCode
                     appCore = CreateCorePair(gameInfo);
                     appl.AddAppCore(appCore);
                     appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
+                    appl.LocalGameJoinedEvt += _OnLocalGameJoinedEvt;
                     appCore.Start(AceCoreModeFactory.kStart );
                 }
 
@@ -95,6 +96,13 @@ namespace AceGameCode
                     break;
                 }
             }
+        }
+
+
+        private void _OnLocalGameJoinedEvt(object sender, LocalPeerJoinedGameEventArgs args)
+        {
+            if (args.success == false)
+                ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{args.failureReason}\"");
         }
 
         // AppCore event handlers

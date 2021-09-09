@@ -30,11 +30,13 @@ namespace AceGameCode
 
     public interface IAceAppCore
     {
-       event EventHandler<StringEventArgs> GroupJoinedEvt;
-       event EventHandler<PlayerJoinedEventArgs> PlayerJoinedEvt;
-       event EventHandler<PlayerLeftEventArgs> PlayerLeftEvt;
+        event EventHandler<StringEventArgs> GroupJoinedEvt;
+        event EventHandler<PlayerJoinedEventArgs> PlayerJoinedEvt;
+        event EventHandler<PlayerLeftEventArgs> PlayerLeftEvt;
         event EventHandler<PlayerLeftEventArgs> PlayerMissingEvt; // not Gone... yet
         event EventHandler<PlayerLeftEventArgs> PlayerReturnedEvt;
+
+        //AceCoreState CoreState { get;}
     }
 
     public class AceAppCore : ApianAppCore, IAceAppCore, IFsmApp

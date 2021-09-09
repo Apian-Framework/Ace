@@ -27,6 +27,12 @@ namespace AceGameCode
         public string p2pId;
         public PeerLeftEventArgs(string g, string p) {channelId=g; p2pId=p;}
     }
+
+    public class GameAnnounceEventArgs : EventArgs {
+        public AceGameInfo gameInfo;
+        public GameAnnounceEventArgs( AceGameInfo gi) { gameInfo = gi; }
+    }
+
     public class GameSelectedEventArgs : EventArgs {
         public enum ReturnCode {kCreate, kJoin, kCancel};
         public ReturnCode result;
@@ -34,11 +40,17 @@ namespace AceGameCode
         public GameSelectedEventArgs( AceGameInfo gi, ReturnCode r) { gameInfo = gi; result = r; }
     }
 
-    public class GameAnnounceEventArgs : EventArgs {
-        public AceGameInfo gameInfo;
-        public GameAnnounceEventArgs( AceGameInfo gi) { gameInfo = gi; }
+    public class LocalPeerJoinedGameEventArgs : EventArgs {
+        public bool success;
+        public string groupId;
+        public string failureReason;
+        public LocalPeerJoinedGameEventArgs( bool result,  string gId,  string fr)
+        {
+            success = result;
+            groupId = gId;
+            failureReason = fr;
+        }
     }
-
 
     public interface IAceApplication : IApianApplication
     {

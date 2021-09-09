@@ -95,6 +95,25 @@ namespace AceGameCode
 
 
         // Called FROM GroupManager
+        public override string ValidateJoinRequest( GroupJoinRequestMsg requestMsg)
+        {
+            AcePlayer pl = AcePlayer.FromApianJson(requestMsg.ApianClientPeerJson);
+            AceGameInfo agi = GroupInfo  as AceGameInfo;
+            const int kMaxPlayers = 2; // kinda implicit in the game
+
+            // Is there room for a player?
+            if ( pl.Role == PlayerRole.kPlayer && (AppCore as AceAppCore).CoreState.Players.Count >= kMaxPlayers)
+                return "Max Players exceeded";
+
+            // How about for a Validator?
+            if ((pl.Role == PlayerRole.kPlayer || pl.Role == PlayerRole.kPreferPlayer)
+                && GroupMgr.MemberCount >= kMaxPlayers + agi.MaxValidators)
+                return "Max Validators exceeded.";
+
+            return null; // let 'em in
+
+        }
+
         public override void OnGroupMemberJoined(ApianGroupMember member) // ATM Ace doesn't care
         {
             base.OnGroupMemberJoined(member);

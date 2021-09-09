@@ -25,6 +25,7 @@ namespace AceGameCode
         public event EventHandler<PeerJoinedEventArgs> PeerJoinedEvt;
         public event EventHandler<PeerLeftEventArgs> PeerLeftEvt;
         public event EventHandler<GameAnnounceEventArgs> GameAnnounceEvt;
+        public event EventHandler<LocalPeerJoinedGameEventArgs> LocalGameJoinedEvt;
 
         public AceApplication(AceGameNet agn, IAceFrontend fe)
         {
@@ -97,7 +98,9 @@ namespace AceGameCode
                 AcePlayer.AiCtrl,
                 AceDemoData.RandomName(),
                 LocalPeer.PeerId,
-                PlayerRole.kPreferPlayer );
+                //PlayerRole.kPlayer
+                PlayerRole.kPreferPlayer
+            );
         }
 
 
@@ -139,6 +142,21 @@ namespace AceGameCode
             AceGameInfo agi = new AceGameInfo(groupInfo);
             GameAnnounceEvt?.Invoke(this, new GameAnnounceEventArgs(agi));
         }
+
+        public void OnPeerJoinedGroup(PeerJoinedGroupData joinData)
+        {
+            if (joinData.PeerId == LocalPeer.PeerId)
+            {
+                if (joinData.Success)
+                    Logger.Info( $"OnLocalPeerJoinedGroup() - Joined group: {joinData.GroupInfo.GroupId}!");
+                else
+                    Logger.Info( $"OnLocalPeerJoinedGroup() - Failed to join group: {joinData.GroupInfo.GroupId}: \"{joinData.Message}\" ");
+
+             LocalGameJoinedEvt?.Invoke(this, new LocalPeerJoinedGameEventArgs(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message));
+            }
+        }
+
+
         public void OnGroupMemberStatus(string groupId, string peerId, ApianGroupMember.Status newStatus, ApianGroupMember.Status prevStatus)
         {
             Logger.Info($"OnGroupMemberStatus() Grp: {groupId}, Peer: {UniLogger.SID(peerId)}, Status: {newStatus}, Prev: {prevStatus}");
