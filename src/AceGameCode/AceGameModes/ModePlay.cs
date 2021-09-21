@@ -50,7 +50,7 @@ namespace AceGameCode
             }
         }
 
-        public void OnGameSelected( GameSelectedEventArgs args)
+        public async void OnGameSelected( GameSelectedEventArgs args)
         {
             AceGameInfo gameInfo = args.gameInfo;
             GameSelectedEventArgs.ReturnCode result = args.result;
@@ -72,9 +72,10 @@ namespace AceGameCode
                     appCore = CreateCorePair(gameInfo);
                     appl.AddAppCore(appCore);
                     appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
-                    appl.LocalGameJoinedEvt += _OnLocalGameJoinedEvt;
                     appCore.Start(AceCoreModeFactory.kStart );
                 }
+
+                LocalPeerJoinedGameData joinData = null;
 
                 switch (result)
                 {
@@ -82,28 +83,31 @@ namespace AceGameCode
                     if (targetGameExisted)
                         ExitAbruptly( $"OnGameSelected(): Cannot create.  Ace Game \"{gameName}\" already exists");
                     else {
-                        appl.CreateAndJoinGame(gameInfo, appCore);
+                        joinData = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
                     }
                     break;
 
                 case GameSelectedEventArgs.ReturnCode.kJoin:
                     if (targetGameExisted)
                     {
-                        appl.JoinExistingGame(gameInfo, appCore);
+                        joinData = await appl.JoinExistingGameAsync(gameInfo, appCore);
                     }
                     else
                         ExitAbruptly( $"OnGameSelected(): Apian Game \"{gameName}\" Not Found");
                     break;
                 }
+
+                if (joinData?.success == false)
+                    ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{joinData?.failureReason}\"");
             }
         }
 
 
-        private void _OnLocalGameJoinedEvt(object sender, LocalPeerJoinedGameEventArgs args)
-        {
-            if (args.success == false)
-                ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{args.failureReason}\"");
-        }
+        // private void _OnLocalGameJoinedEvt(object sender, LocalPeerJoinedGameEventArgs args)
+        // {
+        //     if (args.success == false)
+        //         ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{args.failureReason}\"");
+        // }
 
         // AppCore event handlers
         private void _OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs ga)

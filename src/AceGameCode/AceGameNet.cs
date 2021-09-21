@@ -15,6 +15,10 @@ namespace AceGameCode
         AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators);
         void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData);
         void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData );
+
+        Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localData);
+        Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localData );
+
         void SendNewPlayerRequest(string gameId, AcePlayer newPlayer);
 
     }
@@ -22,7 +26,6 @@ namespace AceGameCode
 
     public class AceGameNet : ApianGameNetBase, IAceGameNet
     {
-
 
         public const int kAceNetworkChannelInfo = 0;
         public const int kAceGameChannelInfo = 1;
@@ -72,18 +75,22 @@ namespace AceGameCode
             base.JoinExistingGroup(gameInfo, apian, localData);
         }
 
+        public async Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localData )
+        {
+            return await base.JoinExistingGroupAsync(gameInfo, apian, localData);
+        }
+
         public void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData)
         {
-            string netName = p2p.GetMainChannel()?.Name;
-            if (netName == null)
-            {
-                logger.Error($"CreateAndJoinGame() - Must join network first"); // TODO: probably ought to assert? Can this be recoverable?
-                return;
-            }
-
-            base.CreateAndJoinGroup(gameInfo, apian, localData);
-
+           base.CreateAndJoinGroup(gameInfo, apian, localData);
         }
+
+        public async Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localData)
+        {
+            return await base.CreateAndJoinGroupAsync(gameInfo, apian, localData);
+        }
+
+
 
 
 

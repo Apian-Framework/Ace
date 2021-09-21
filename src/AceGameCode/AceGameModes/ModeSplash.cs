@@ -50,7 +50,7 @@ namespace AceGameCode
                 SplashAppCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
                 SplashAppCore.Start(AceCoreModeFactory.kStart );
 
-                appl.CreateAndJoinGame(gameInfo, SplashAppCore);
+                LocalPeerJoinedGameData joinData = await  appl.CreateAndJoinGameAsync(gameInfo, SplashAppCore);
 
             } catch (Exception ex) {
                 ExitAbruptly( $"{ex.Message}");
@@ -62,9 +62,6 @@ namespace AceGameCode
           // AppCore event handlers
         private void _OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs ga)
         {
-            bool isLocal = ga.player.PeerId == appl.LocalPeer.PeerId;
-            logger.Info($"{(ModeName())} - OnPlayerJoinedEvt() - {(isLocal?"Local":"Remote")} Member Joined: {ga.player.Name}, ID: {SID(ga.player.PlayerId)}");
-
             // Need to create any more?
             if ( SplashAppCore.CoreState.Players.Count < kTotalPlayers)
                 appl.SendNewPlayerRequest(SplashAppCore.ApianGroupId, appl.MakeAiAcePlayer());

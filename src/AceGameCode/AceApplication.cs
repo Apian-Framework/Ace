@@ -25,7 +25,6 @@ namespace AceGameCode
         public event EventHandler<PeerJoinedEventArgs> PeerJoinedEvt;
         public event EventHandler<PeerLeftEventArgs> PeerLeftEvt;
         public event EventHandler<GameAnnounceEventArgs> GameAnnounceEvt;
-        public event EventHandler<LocalPeerJoinedGameEventArgs> LocalGameJoinedEvt;
 
         public AceApplication(AceGameNet agn, IAceFrontend fe)
         {
@@ -103,14 +102,17 @@ namespace AceGameCode
             );
         }
 
+        public async Task<LocalPeerJoinedGameData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
+        {
+            PeerJoinedGroupData joinData = await aceGameNet.CreateAndJoinGameAsync(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
+            return new LocalPeerJoinedGameData(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message);
 
-        public void CreateAndJoinGame(AceGameInfo gameInfo, AceAppCore appCore)
-        {
-            aceGameNet.CreateAndJoinGame(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
         }
-       public void JoinExistingGame(AceGameInfo gameInfo, AceAppCore appCore)
+
+        public async Task<LocalPeerJoinedGameData> JoinExistingGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
         {
-            aceGameNet.JoinExistingGame(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
+            PeerJoinedGroupData joinData = await aceGameNet.JoinExistingGameAsync(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
+            return new LocalPeerJoinedGameData(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message);
         }
 
         public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
@@ -151,8 +153,6 @@ namespace AceGameCode
                     Logger.Info( $"OnLocalPeerJoinedGroup() - Joined group: {joinData.GroupInfo.GroupId}!");
                 else
                     Logger.Info( $"OnLocalPeerJoinedGroup() - Failed to join group: {joinData.GroupInfo.GroupId}: \"{joinData.Message}\" ");
-
-             LocalGameJoinedEvt?.Invoke(this, new LocalPeerJoinedGameEventArgs(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message));
             }
         }
 

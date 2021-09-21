@@ -40,11 +40,11 @@ namespace AceGameCode
         public GameSelectedEventArgs( AceGameInfo gi, ReturnCode r) { gameInfo = gi; result = r; }
     }
 
-    public class LocalPeerJoinedGameEventArgs : EventArgs {
+    public class LocalPeerJoinedGameData {
         public bool success;
         public string groupId;
         public string failureReason;
-        public LocalPeerJoinedGameEventArgs( bool result,  string gId,  string fr)
+        public LocalPeerJoinedGameData( bool result,  string gId,  string fr)
         {
             success = result;
             groupId = gId;
