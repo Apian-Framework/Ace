@@ -88,8 +88,6 @@ namespace AceGameCode
                 // PlayerRole.kPlayer );
         }
 
-
-
         public AcePlayer MakeAiAcePlayer()
         {
             return  new AcePlayer(
@@ -106,7 +104,6 @@ namespace AceGameCode
         {
             PeerJoinedGroupData joinData = await aceGameNet.CreateAndJoinGameAsync(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
             return new LocalPeerJoinedGameData(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message);
-
         }
 
         public async Task<LocalPeerJoinedGameData> JoinExistingGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
