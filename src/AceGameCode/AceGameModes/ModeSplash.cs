@@ -23,7 +23,8 @@ namespace AceGameCode
         private Dictionary<string, AceGameInfo> announcedGames;
 
         private AceAppCore SplashAppCore; // this is the one we are creating here
-        protected const int kTotalPlayers = 3;
+        protected const int kTotalPlayers = 2; // No validators
+        protected const int kValidatorWaitMs = 0;
 
 		public async override void Start(object param = null)
         {
@@ -41,8 +42,9 @@ namespace AceGameCode
                 AceGameInfo gameInfo = appl.aceGameNet.CreateAceGameInfo(
                     kApianGroupName,
                     SinglePeerGroupManager.kGroupType,
-                    kTotalPlayers - 2,  // min validators
-                    kTotalPlayers - 2   // max validators
+                    0,  // min validators
+                    0,   // max validators
+                    kValidatorWaitMs
                     );
 
                 SplashAppCore = CreateCorePair(gameInfo);

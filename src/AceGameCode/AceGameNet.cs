@@ -12,7 +12,7 @@ namespace AceGameCode
     public interface IAceGameNet : IApianGameNet
     {
         Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string netName, AceNetworkPeer localPeer);
-        AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators);
+        AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators, int validatorWaitMs);
         void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData);
         void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData );
 
@@ -42,7 +42,7 @@ namespace AceGameCode
             logger.Verbose($"Ctor: {this.GetType().Name}");
         }
 
-        public AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators)
+        public AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators, int validatorWaitMs)
         {
            string netName = p2p.GetMainChannel()?.Name;
             if (netName == null)
@@ -59,6 +59,7 @@ namespace AceGameCode
 
             groupInfo.GroupParams["MinValidators"] = $"{minValidators}";
             groupInfo.GroupParams["MaxValidators"] = $"{maxValidators}";
+            groupInfo.GroupParams["ValidatorWaitMs"] = $"{validatorWaitMs}";
 
             return new AceGameInfo(groupInfo);
         }

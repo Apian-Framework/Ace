@@ -38,10 +38,36 @@ namespace AceGameCode
 
             try {
                 appl.ConnectToNetwork(settings.p2pConnectionString); // should be async? GameNet.Connect() currently is not
-                await appl.JoinGameNetworkAsync(settings.apianNetworkName);
-                announcedGames = await appl.GetExistingGamesAsync((int)(kListenForGamesSecs*1000));
-                GameSelectedEventArgs selection = await appl.SelectGameAsync(announcedGames);
-                OnGameSelected(selection);
+                GameNet.PeerJoinedNetworkData netJoinData = await appl.JoinGameNetworkAsync(settings.apianNetworkName);
+
+                Dictionary<string, AceGameInfo> gamesAvail = await appl.GetExistingGamesAsync((int)(kListenForGamesSecs*1000));
+                GameSelectedEventArgs selection = await appl.SelectGameAsync(gamesAvail);
+
+                if (selection.result == GameSelectedEventArgs.ReturnCode.kCancel)
+                    ExitAbruptly($"No Game Selected.");
+
+                AceGameInfo gameInfo = selection.gameInfo;
+                AceAppCore appCore = _SetupCorePair(gameInfo);
+
+                bool targetGameExisted = (gameInfo.GameName != null) && gamesAvail.ContainsKey(gameInfo.GameName);
+                LocalPeerJoinedGameData gameJoinData = null;
+
+                if (selection.result == GameSelectedEventArgs.ReturnCode.kCreate)
+                {
+                    // Create and join
+                    if (targetGameExisted)
+                        ExitAbruptly($"Cannot create.  Beam Game \"{gameInfo.GameName}\" already exists");
+                    else
+                        gameJoinData = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
+
+                } else {
+                    // Join existing
+                    if (!targetGameExisted)
+                         ExitAbruptly($"Cannot Join.  Beam Game \"{gameInfo.GameName}\" not found");
+                    else
+                        gameJoinData = await appl.JoinExistingGameAsync(gameInfo, appCore);
+                }
+
 
             } catch (Exception ex) {
                 ExitAbruptly( $"{ex.Message}");
@@ -50,6 +76,19 @@ namespace AceGameCode
             }
         }
 
+        private AceAppCore _SetupCorePair(AceGameInfo gameInfo)
+        {
+            if (gameInfo == null)
+                ExitAbruptly($"_SetupCorePair(): null gameInfo");
+
+            AceAppCore appCore = CreateCorePair(gameInfo);
+            appl.AddAppCore(appCore);
+            appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
+            appCore.Start(AceCoreModeFactory.kStart );
+            return appCore;
+        }
+
+/*
         public async void OnGameSelected( GameSelectedEventArgs args)
         {
             AceGameInfo gameInfo = args.gameInfo;
@@ -101,7 +140,7 @@ namespace AceGameCode
                     ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{joinData?.failureReason}\"");
             }
         }
-
+*/
 
         // private void _OnLocalGameJoinedEvt(object sender, LocalPeerJoinedGameEventArgs args)
         // {
