@@ -73,6 +73,11 @@ namespace AceGameCode
         public string defaultLogLevel;
 
         public Dictionary<string, string> logLevels;
+
+        // Ace tempSettings include:
+        // gameName
+        // groupType
+        // validator - overrides player creation
         public Dictionary<string, string> tempSettings; // dict of cli-set, non-peristent values
         public Dictionary<string, string> platformSettings; // dict of persistent, but platform-specific, settings
 

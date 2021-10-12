@@ -50,7 +50,8 @@ namespace AceGameCode
                 AceAppCore appCore = _SetupCorePair(gameInfo);
 
                 bool targetGameExisted = (gameInfo.GameName != null) && gamesAvail.ContainsKey(gameInfo.GameName);
-                LocalPeerJoinedGameData gameJoinData = null;
+
+                LocalPeerJoinedGameData gameJoinedResult = null;
 
                 if (selection.result == GameSelectedEventArgs.ReturnCode.kCreate)
                 {
@@ -58,16 +59,18 @@ namespace AceGameCode
                     if (targetGameExisted)
                         ExitAbruptly($"Cannot create.  Beam Game \"{gameInfo.GameName}\" already exists");
                     else
-                        gameJoinData = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
+                        gameJoinedResult = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
 
                 } else {
                     // Join existing
                     if (!targetGameExisted)
                          ExitAbruptly($"Cannot Join.  Beam Game \"{gameInfo.GameName}\" not found");
                     else
-                        gameJoinData = await appl.JoinExistingGameAsync(gameInfo, appCore);
+                        gameJoinedResult = await appl.JoinExistingGameAsync(gameInfo, appCore);
                 }
 
+                if (!gameJoinedResult.success)
+                    ExitAbruptly( gameJoinedResult.failureReason);
 
             } catch (Exception ex) {
                 ExitAbruptly( $"{ex.Message}");

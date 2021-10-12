@@ -77,40 +77,63 @@ namespace AceGameCode
             return selection;
         }
 
-        public AcePlayer MakeDefaultAcePlayer()
+        public AcePlayer MakeAiPlayer()
         {
-            return MakeAiAcePlayer();
-            //return  new AcePlayer(
-                // Guid.NewGuid().ToString(),
-                // AcePlayer.LoaclPlayerCtrl,
-                // LocalPeer.Name,
-                // LocalPeer.PeerId,
-                // PlayerRole.kPlayer );
+            return new AcePlayer (Guid.NewGuid().ToString(), AcePlayer.AiCtrl, AceDemoData.RandomName(), LocalPeer.PeerId);
         }
 
-        public AcePlayer MakeAiAcePlayer()
+        // TaskCompletionSource<PlayerJoinedEventArgs> NewLocalPayerCompletionSource;
+
+
+        private void OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs args)
         {
-            return  new AcePlayer(
-                Guid.NewGuid().ToString(),
-                AcePlayer.AiCtrl,
-                AceDemoData.RandomName(),
-                LocalPeer.PeerId,
-                //PlayerRole.kPlayer
-                PlayerRole.kPreferPlayer
-            );
+            if (args.player.PeerId == LocalPeer.PeerId)
+            {
+                Logger.Info($"OnPlayerJoinedEvt() - Local Player Joined: {args.player.Name}, ID: {SID(args.player.PlayerId)}");
+                //NewLocalPayerCompletionSource.TrySetResult(args);
+            }
         }
 
         public async Task<LocalPeerJoinedGameData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
         {
-            PeerJoinedGroupData joinData = await aceGameNet.CreateAndJoinGameAsync(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
-            return new LocalPeerJoinedGameData(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message);
+            PeerJoinedGroupData peerJoinedData = await aceGameNet.CreateAndJoinGameAsync(gameInfo, appCore.AceApian, null );
+            return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success, peerJoinedData.Message);
         }
 
         public async Task<LocalPeerJoinedGameData> JoinExistingGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
         {
-            PeerJoinedGroupData joinData = await aceGameNet.JoinExistingGameAsync(gameInfo, appCore.AceApian, MakeDefaultAcePlayer().ApianSerialized() );
-            return new LocalPeerJoinedGameData(joinData.Success, joinData.GroupInfo.GroupId, joinData.Message);
+            PeerJoinedGroupData peerJoinedData = await aceGameNet.JoinExistingGameAsync(gameInfo, appCore.AceApian,  null );
+            return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
+
         }
+
+
+    // Use this as scaffolding for CreatePlayerAsync()
+    //  public async Task<LocalPeerJoinedGameData> JoinExistingGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
+    //     {
+    //         if (joinData.PlayerData != null)
+    //         {
+    //             appCore.PlayerJoinedEvt += OnPlayerJoinedEvt;
+    //             // TODO: check to make sure we aren;t aready waiting for a player
+    //             NewLocalPayerCompletionSource =  new TaskCompletionSource<PlayerJoinedEventArgs>();
+    //         }
+
+    //         PeerJoinedGroupData peerJoinedData = await aceGameNet.JoinExistingGameAsync(gameInfo, appCore.AceApian,  null );
+    //         if (joinData.PlayerData == null || !peerJoinedData.Success)
+    //         {
+    //             NewLocalPayerCompletionSource = null;
+    //             return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
+    //         }
+
+    //         PlayerJoinedEventArgs pjArgs =  await  NewLocalPayerCompletionSource.Task.ContinueWith(
+    //             t => {  NewLocalPayerCompletionSource=null; return t.Result;}, TaskScheduler.Default
+    //             );
+
+    //         Logger.Info($"JoinExistingGameAsync() Game Joined. Local Player Created.");
+    //         return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
+
+    //     }
+
 
         public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
         {

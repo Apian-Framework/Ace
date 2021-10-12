@@ -13,11 +13,11 @@ namespace AceGameCode
     {
         Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string netName, AceNetworkPeer localPeer);
         AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int minValidators, int maxValidators, int validatorWaitMs);
-        void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData);
-        void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData );
+        void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localDataJson);
+        void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localDataJson);
 
-        Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localData);
-        Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localData );
+        Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localDataJson);
+        Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localDataJson);
 
         void SendNewPlayerRequest(string gameId, AcePlayer newPlayer);
 
@@ -64,7 +64,7 @@ namespace AceGameCode
             return new AceGameInfo(groupInfo);
         }
 
-        public void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localData )
+        public void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localDataJson)
         {
             string netName = p2p.GetMainChannel()?.Name;
             if (netName == null)
@@ -73,26 +73,23 @@ namespace AceGameCode
                 return;
             }
 
-            base.JoinExistingGroup(gameInfo, apian, localData);
+            base.JoinExistingGroup(gameInfo, apian, localDataJson);
         }
 
-        public async Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localData )
+        public async Task<PeerJoinedGroupData> JoinExistingGameAsync(AceGameInfo gameInfo, AceApian apian, string localDataJson)
         {
-            return await base.JoinExistingGroupAsync(gameInfo, apian, localData);
+            return await base.JoinExistingGroupAsync(gameInfo, apian, localDataJson);
         }
 
-        public void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localData)
+        public void CreateAndJoinGame(AceGameInfo gameInfo, AceApian apian, string localDataJson)
         {
-           base.CreateAndJoinGroup(gameInfo, apian, localData);
+           base.CreateAndJoinGroup(gameInfo, apian, localDataJson);
         }
 
-        public async Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localData)
+        public async Task<PeerJoinedGroupData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceApian apian, string localDataJson)
         {
-            return await base.CreateAndJoinGroupAsync(gameInfo, apian, localData);
+            return await base.CreateAndJoinGroupAsync(gameInfo, apian, localDataJson);
         }
-
-
-
 
 
         protected override IP2pNet P2pNetFactory(string p2pConnectionString)

@@ -35,7 +35,7 @@ namespace AceGameCode
     public class PlayerLeftMsg : AceMessage
     {
         public string peerId;
-        public PlayerLeftMsg(long ts, string _peerId) : base(kPlayerLeft, ts) => peerId = _peerId;
+        public PlayerLeftMsg(long ts, string _peerId) : base(kPlayerLeft, ts) { peerId = _peerId; }
         public PlayerLeftMsg() : base() {}
 
     }

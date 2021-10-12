@@ -54,11 +54,16 @@ namespace AceGameCode
             Dictionary<string, AcePlayer> newPlayers = (sData[1] as JArray)
                 .Select( s => AcePlayer.FromApianJson((string)s))
                 .ToDictionary(p => p.PlayerId);
-
             newState.Players = newPlayers;
 
             return newState;
         }
+
+        public AcePlayer GetPlayer(string peerId)
+        {
+            try { return Players[peerId];} catch (KeyNotFoundException){ return null;}
+        }
+
 
     }
 

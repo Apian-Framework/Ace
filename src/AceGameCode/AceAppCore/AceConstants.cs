@@ -1,11 +1,11 @@
 namespace AceGameCode
 {
-    public enum PlayerRole : int
+    public enum AcePeerRole : int
     {
         kNone = 0,
         kPlayer = 1,
         kValidator = 2,
-        kPreferPlayer= 3, // This is a "desired role": Player if available, if not then validator.
+        kPreferPlayer= 3, // Player if available, if not then validator.
     }
     public enum PlaneColor : int
     {

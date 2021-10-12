@@ -20,15 +20,13 @@ namespace AceGameCodeTests
             const string ctrlType = AcePlayer.AiCtrl;
             const string peerId = "aPeerId";
             const string name = "aName";
-            const PlayerRole role = PlayerRole.kPlayer;
 
-            AcePlayer pl = new AcePlayer(playerId, ctrlType, name, peerId, role);
+            AcePlayer pl = new AcePlayer(playerId, ctrlType, name, peerId);
 
             Assert.That(pl, Is.Not.Null);
             Assert.That(pl.PeerId, Is.EqualTo(peerId));
             Assert.That(pl.CtrlType, Is.EqualTo(ctrlType));
             Assert.That(pl.Name, Is.EqualTo(name));
-            Assert.That(pl.Role, Is.EqualTo(role));
             Assert.That(pl.Team, Is.EqualTo(PlaneColor.kNone));
         }
 
@@ -39,11 +37,12 @@ namespace AceGameCodeTests
             const string ctrlType = AcePlayer.AiCtrl;
             const string peerId = "aPeerId";
             const string name = "aName";
-            const PlayerRole role = PlayerRole.kPlayer;
+            const bool isMissing = false;
+            string isMissingStr = JsonConvert.SerializeObject(isMissing); // (string)isMissing results in "False" which is not what we want
 
-            string expected = "[\"" + playerId + "\",\"" + ctrlType + "\",\"" + name + "\",\""  + peerId + "\"," + (int)role + "," + (int)PlaneColor.kNone + "]";
+            string expected = "[\"" + playerId + "\",\"" + ctrlType + "\",\"" + name + "\",\""  + peerId + "\"," + (int)PlaneColor.kNone +  "," + isMissingStr + "]";
 
-            AcePlayer pl = new AcePlayer(playerId, ctrlType, name, peerId, role);
+            AcePlayer pl = new AcePlayer(playerId, ctrlType, name, peerId);
             string result = pl.ApianSerialized();
 
             Assert.That(result, Is.EqualTo(expected));
@@ -56,16 +55,16 @@ namespace AceGameCodeTests
             const string ctrlType = AcePlayer.LocalPlayerCtrl;
             const string peerId = "aPeerId";
             const string name = "aName";
-            const PlayerRole role = PlayerRole.kPlayer;
+            const bool isMissing = false;
+            string isMissingStr = JsonConvert.SerializeObject(isMissing); // (string)isMissing results in "False" which is not what we want
 
-            string json = "[\"" + playerId + "\",\""  + ctrlType + "\",\"" + name +  "\",\"" + peerId + "\"," + (int)role + "," + (int)PlaneColor.kRed + "]";
+            string json = "[\"" + playerId + "\",\""  + ctrlType + "\",\"" + name +  "\",\"" + peerId + "\"," + (int)PlaneColor.kRed + "," + isMissingStr + "]";
 
             AcePlayer pl = AcePlayer.FromApianJson(json);
 
             Assert.That(pl.PlayerId, Is.EqualTo(playerId));
             Assert.That(pl.PeerId, Is.EqualTo(peerId));
             Assert.That(pl.Name, Is.EqualTo(name));
-            Assert.That(pl.Role, Is.EqualTo(role));
             Assert.That(pl.Team, Is.EqualTo(PlaneColor.kRed));
         }
 

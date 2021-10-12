@@ -26,10 +26,10 @@ namespace AceGameCode
         public Vector2 Position {get; protected set;}
         public PlaneOrientation Orientation {get; protected set;}
 
-        public AcePlane(string _id, string _peerId, string _name, string ctrl, Vector2 initialPos, PlaneOrientation initialOrient)
+        public AcePlane(string _id, string _playerId, string _name, string ctrl, Vector2 initialPos, PlaneOrientation initialOrient)
         {
             PlaneId = _id;
-            PlayerId = _peerId;
+            PlayerId = _playerId;
             Name = _name;
             CtrlType = ctrl;
             Position = initialPos;

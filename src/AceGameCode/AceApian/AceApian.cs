@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Security.Cryptography; // for MD5 hash
 using System.Collections.Generic;
@@ -12,8 +13,28 @@ namespace AceGameCode
 {
     public class AceApianPeer : ApianGroupMember
     {
-        public AceApianPeer(string _p2pId, string _appHelloData) : base(_p2pId, _appHelloData) { }
+        public AceApianPeer(string _p2pId, string _appHelloData) : base(_p2pId, _appHelloData)
+        {
+
+        }
     }
+
+    //
+    // This is an example of data passed in the JoinGroupRequest. "Player" turned out to be a dumb idea...
+    // &&&& I'm leaving this here for now in case I think of somethign I *do* want in the JoinRequest
+    // TODO: either use this for something or delete it.
+    //
+    // public class AceJoinGameData
+    // {
+    //     public AcePlayer PlayerData { get; private set; }    // if null the peer wants to be a validator
+    //     public AceJoinGameData(AcePlayer playerData = null)
+    //     {
+    //         PlayerData = playerData;
+    //     }
+    //     public string ToJson() => JsonConvert.SerializeObject(this);
+    //     public static AceJoinGameData FromJson(string json) => JsonConvert.DeserializeObject<AceJoinGameData>(json);
+    // }
+
 
     public static class AceApianFactory
     {
@@ -50,7 +71,7 @@ namespace AceGameCode
     public abstract class AceApian : ApianBase
     {
 
-        public Dictionary<string, AceApianPeer> apianPeers;
+        //public Dictionary<string, AceApianPeer> apianPeers;
         public IAceGameNet AceGameNet {get; private set;}
         protected AceAppCore appCore;
 
@@ -64,9 +85,13 @@ namespace AceGameCode
             // ApianClock and GroupMgr are created in the group-manager-specific subclass
             // ie. AceApianLeaderSez
 
-            apianPeers = new Dictionary<string, AceApianPeer>();
+            //apianPeers = new Dictionary<string, AceApianPeer>();
         }
 
+        public override ApianGroupMember CreateGroupMember(string peerId, string appMemberDataJson)
+        {
+            return new AceApianPeer(peerId, appMemberDataJson);
+        }
 
         public override void Update()
         {
@@ -75,11 +100,11 @@ namespace AceGameCode
             // ((AceAppCore)AppCore)?.Loop();   <- ace AppCore has no loop()
         }
 
-        protected void AddApianPeer(string p2pId, string peerHelloData)
-        {
-            AceApianPeer p = new AceApianPeer(p2pId, peerHelloData);
-            apianPeers[p2pId] = p;
-        }
+        // protected void AddApianPeer(string p2pId, string peerHelloData)
+        // {
+        //     AceApianPeer p = new AceApianPeer(p2pId, peerHelloData);
+        //     apianPeers[p2pId] = p;
+        // }
 
         public override void OnPeerMissing(string channelId, string p2pId)
         {
@@ -95,24 +120,6 @@ namespace AceGameCode
 
 
         // Called FROM GroupManager
-        public override string ValidateJoinRequest( GroupJoinRequestMsg requestMsg)
-        {
-            AcePlayer pl = AcePlayer.FromApianJson(requestMsg.ApianClientPeerJson);
-            AceGameInfo agi = GroupInfo  as AceGameInfo;
-            const int kMaxPlayers = 2; // kinda implicit in the game
-
-            // Is there room for a player?
-            if ( pl.Role == PlayerRole.kPlayer && (AppCore as AceAppCore).CoreState.Players.Count >= kMaxPlayers)
-                return "Max Players exceeded";
-
-            // How about for a Validator?
-            if ((pl.Role == PlayerRole.kPlayer || pl.Role == PlayerRole.kPreferPlayer)
-                && GroupMgr.MemberCount >= kMaxPlayers + agi.MaxValidators)
-                return "Max Validators exceeded.";
-
-            return null; // let 'em in
-
-        }
 
         public override void OnGroupMemberJoined(ApianGroupMember member) // ATM Ace doesn't care
         {
@@ -121,13 +128,15 @@ namespace AceGameCode
             // Ace (appCore) only cares about local peer's group membership status
             if (member.PeerId == GameNet.LocalP2pId())
             {
-                appCore.OnGroupJoined(GroupMgr.GroupId);  // TODO: wait - appCore has OnGroupJoined? SHouldn't know about groups.
+                appCore.OnGroupJoined(GroupMgr.GroupId);  // TODO: wait - appCore has OnGroupJoined? Shouldn't know about groups.
             }
         }
 
         public override void OnGroupMemberStatusChange(ApianGroupMember member, ApianGroupMember.Status prevStatus)
         {
             base.OnGroupMemberStatusChange(member, prevStatus);
+            AceApianPeer peer = member as AceApianPeer;
+
             // Note that the member status has already been changed when this is called
 
             // Ace-specific handling.
@@ -137,33 +146,29 @@ namespace AceGameCode
             //  When we see these transitions send an OBSERVATION.
             // The ApianGroup will can then convert it to a Command and distribute that.
 
-             switch(prevStatus)
+            switch(prevStatus)
             {
             case ApianGroupMember.Status.Joining:
-                if (member.CurStatus == ApianGroupMember.Status.Active)
+                if (peer.CurStatus == ApianGroupMember.Status.Active)
                 {
                     // In a leader-based ApianGroup the first peer will probably go stright from Joining to Active
-                    SendNewPlayerObs(ApianClock.CurrentTime, AcePlayer.FromApianJson(member.AppDataJson));
                 }
                 break;
             case ApianGroupMember.Status.Syncing:
                 if (member.CurStatus == ApianGroupMember.Status.Active)
                 {
                     // Most common situation
-                    SendNewPlayerObs(ApianClock.CurrentTime, AcePlayer.FromApianJson(member.AppDataJson));
-                }
-                break;
-            case ApianGroupMember.Status.Active:
-                if (member.CurStatus == ApianGroupMember.Status.Removed)
-                {
-                    // FIXME: This switch needs to all be turned inside-out.
-                    // If ANY state transitions to "removed" then PlayerLeft needs to get sent
-                    SendPlayerLeftObs(ApianClock.CurrentTime, member.PeerId);
                 }
                 break;
             }
-        }
 
+            // Regardless what state it WAS...
+            if (member.CurStatus == ApianGroupMember.Status.Removed)
+            {
+                // TODO: send PEER left obs
+                SendPlayerLeftObs(ApianClock.CurrentTime, member.PeerId);
+            }
+        }
 
         // State checkpoints
         private static string _GetMd5Hash(MD5 md5Hash, string input)
@@ -208,6 +213,7 @@ namespace AceGameCode
 
         public void SendPlayerLeftObs( long timeStamp, string peerId)
         {
+            // It's really "Player's Host Peer Left"
             Logger.Debug($"SendPlayerLeftObs()");
             PlayerLeftMsg msg = new PlayerLeftMsg(timeStamp, peerId);
             SendObservation( msg);

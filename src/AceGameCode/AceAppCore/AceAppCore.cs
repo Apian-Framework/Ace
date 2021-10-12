@@ -36,6 +36,7 @@ namespace AceGameCode
         event EventHandler<PlayerLeftEventArgs> PlayerMissingEvt; // not Gone... yet
         event EventHandler<PlayerLeftEventArgs> PlayerReturnedEvt;
 
+        int PlayerCount();
         //AceCoreState CoreState { get;}
     }
 
@@ -69,7 +70,7 @@ namespace AceGameCode
             ClientMsgCommandHandlers = new  Dictionary<string, Action<ApianCoreMessage, long>>()
             {
                 [AceMessage.kNewPlayer] = (msg, seqNum) => OnNewPlayerCmd(msg as NewPlayerMsg, seqNum),
-                // [BeamMessage.kPlayerLeft] = (msg, seqNum) => OnPlayerLeftCmd(msg as PlayerLeftMsg, seqNum),
+                [AceMessage.kPlayerLeft] = (msg, seqNum) => OnPlayerLeftCmd(msg as PlayerLeftMsg, seqNum),
                 // [BeamMessage.kBikeCreateData] = (msg, seqNum) => this.OnCreateBikeCmd(msg as BikeCreateMsg, seqNum),
                 // [BeamMessage.kRemoveBikeMsg] = (msg, seqNum) => this.OnRemoveBikeCmd(msg as RemoveBikeMsg, seqNum),
                 // [BeamMessage.kBikeTurnMsg] = (msg, seqNum) => this.OnBikeTurnCmd(msg as BikeTurnMsg, seqNum),
@@ -109,6 +110,13 @@ namespace AceGameCode
             _AddPlayer(newPlayer);
         }
 
+
+        public void OnPlayerLeftCmd(PlayerLeftMsg msg, long seqNum)
+        {
+            // Really: Player's Host Peer left.
+            Logger.Info($"OnPlayerLeftCmd(#{seqNum})  Peer: {SID(msg.peerId)} left.");
+            _RemovePlayersForPeer(msg.peerId);
+        }
 
         // IApianAppCore
         public override void SetApianReference(ApianBase ap)
@@ -175,6 +183,7 @@ namespace AceGameCode
         // AceAppCore stuff
         public void OnGroupJoined(string groupId)
         {
+            // TODO: Not sure AppCore should know about this.
             Logger.Info($"OnGroupJoined({groupId}) - local peer joined");
             GroupJoinedEvt?.Invoke(this, new StringEventArgs(groupId));
         }
@@ -182,6 +191,9 @@ namespace AceGameCode
 
         public void OnPeerMissing(string groupId, string p2pId)
         {
+            // Same for these? The idea is that AppCore doesn;t directly know about peers at all
+            // Apian should be able to check if AppCore needs to knon, and if so tell it in an
+            // application-sepecific way
             Logger.Info($"Peer: {SID(p2pId)} is missing!");
             foreach( AcePlayer pl in CoreState.Players.Values.Where(p => p.PeerId == p2pId))
                 PlayerMissingEvt?.Invoke(this, new PlayerLeftEventArgs(groupId, pl.PlayerId, pl.PeerId));
@@ -196,7 +208,9 @@ namespace AceGameCode
 
         //
 
-        // Peer-related
+        // Player-related
+        public int PlayerCount() => CoreState.Players.Count;
+
         private bool _AddPlayer(AcePlayer p)
         {
             Logger.Debug($"_AddPlayer().  ID: {SID(p.PlayerId)} Name: {p.Name} Peer: {SID(p.PeerId)}");
@@ -208,6 +222,24 @@ namespace AceGameCode
 
             CoreState.Players[p.PlayerId] = p;
             PlayerJoinedEvt.Invoke(this, new PlayerJoinedEventArgs(ApianGroupId, p));
+            return true;
+        }
+
+        private bool _RemovePlayersForPeer(string p2pId)
+        {
+            Logger.Info($"_RemovePlayersForPeer( {SID(p2pId)} )");
+            IList<AcePlayer> gonePlayers =  CoreState.Players.Values.Where(p => p.PeerId == p2pId).ToList();
+            if (gonePlayers.Count == 0)
+                return false;
+
+            foreach( AcePlayer ap in gonePlayers)
+            {
+                // TODO: Need to remove planes
+                Logger.Info($"Removing {SID(ap.PlayerId)}");
+                PlayerLeftEvt?.Invoke(this, new PlayerLeftEventArgs(ApianGroupId, ap.PlayerId, p2pId));
+                CoreState.Players.Remove(ap.PlayerId);
+            }
+
             return true;
         }
 

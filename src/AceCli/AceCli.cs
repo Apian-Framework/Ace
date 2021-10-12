@@ -17,6 +17,11 @@ namespace AceCli
             public string GameName {get; set;}
 
             [Option(
+	            Default = false,
+	            HelpText = "Join as a Validator only")]
+            public bool Validator {get; set;}
+
+            [Option(
 	            Default = null,
 	            HelpText = "Apian Network name" )]
             public string NetName {get; set;}
@@ -73,6 +78,9 @@ namespace AceCli
 
                         if (o.NetName != null)
                             settings.apianNetworkName = o.NetName;
+
+                        if (o.Validator)
+                            settings.tempSettings["validator"] = "true";
 
                         if (o.GameName != null)
                             settings.tempSettings["gameName"] = o.GameName;

@@ -16,8 +16,6 @@ namespace AceGameCode
     }
 
 
-
-
     public class PeerJoinedEventArgs : EventArgs {
         public string channelId;
         public AceNetworkPeer peer;
@@ -42,13 +40,13 @@ namespace AceGameCode
     }
 
     public class LocalPeerJoinedGameData {
-        public bool success;
         public string groupId;
+        public bool success;
         public string failureReason;
-        public LocalPeerJoinedGameData( bool result,  string gId,  string fr)
+        public LocalPeerJoinedGameData(string gId,  bool result,  string fr)
         {
-            success = result;
             groupId = gId;
+            success = result;
             failureReason = fr;
         }
     }

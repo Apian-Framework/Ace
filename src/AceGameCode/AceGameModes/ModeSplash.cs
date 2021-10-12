@@ -52,7 +52,7 @@ namespace AceGameCode
                 SplashAppCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
                 SplashAppCore.Start(AceCoreModeFactory.kStart );
 
-                LocalPeerJoinedGameData joinData = await  appl.CreateAndJoinGameAsync(gameInfo, SplashAppCore);
+                LocalPeerJoinedGameData joinData = await  appl.CreateAndJoinGameAsync(gameInfo, SplashAppCore );
 
             } catch (Exception ex) {
                 ExitAbruptly( $"{ex.Message}");
@@ -66,8 +66,7 @@ namespace AceGameCode
         {
             // Need to create any more?
             if ( SplashAppCore.CoreState.Players.Count < kTotalPlayers)
-                appl.SendNewPlayerRequest(SplashAppCore.ApianGroupId, appl.MakeAiAcePlayer());
-
+                appl.SendNewPlayerRequest(SplashAppCore.ApianGroupId, appl.MakeAiPlayer());
         }
 
     }

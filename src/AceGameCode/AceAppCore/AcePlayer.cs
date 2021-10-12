@@ -17,22 +17,21 @@ namespace AceGameCode
         public string Name { get; private set;}
         public string PeerId { get; private set;}
         public string CtrlType { get; private set; }
-        public PlayerRole Role { get; private set;}
         public PlaneColor Team { get; private set;}
+        public bool IsMissing { get; private set;}
 
-        public AcePlayer(string playerId, string ctrlType, string name, string peerId,  PlayerRole role, PlaneColor team = PlaneColor.kNone)
+        public AcePlayer(string playerId, string ctrlType, string name, string peerId, PlaneColor team = PlaneColor.kNone, bool isMissing = false)
         {
             // ColorNone is "I don't care"
             PlayerId = playerId;
             CtrlType = ctrlType;
             PeerId = peerId;
             Name = name;
-            Role = role;
             Team = team;
+            IsMissing = isMissing;
         }
 
         // Custom compact json
-        // TODO: set up params to make more compact.
         public static AcePlayer FromApianJson(string jsonData)
         {
             object[] data = JsonConvert.DeserializeObject<object[]>(jsonData);
@@ -41,8 +40,8 @@ namespace AceGameCode
                 (string)data[1], // ctrlTYpe
                 (string)data[2], // name
                 (string)data[3], // PeerId
-                (PlayerRole)(long)data[4], // role
-                (PlaneColor)(long)data[5]  // team
+                (PlaneColor)(long)data[4],  // team
+                (bool)data[5] // isMissing
             );
         }
 
@@ -53,8 +52,8 @@ namespace AceGameCode
                 CtrlType,
                 Name,
                 PeerId,
-                Role,
-                Team
+                Team,
+                IsMissing
             });
         }
 
