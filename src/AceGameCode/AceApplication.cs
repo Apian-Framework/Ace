@@ -82,15 +82,13 @@ namespace AceGameCode
             return new AcePlayer (Guid.NewGuid().ToString(), AcePlayer.AiCtrl, AceDemoData.RandomName(), LocalPeer.PeerId);
         }
 
-        // TaskCompletionSource<PlayerJoinedEventArgs> NewLocalPayerCompletionSource;
-
 
         private void OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs args)
         {
             if (args.player.PeerId == LocalPeer.PeerId)
             {
                 Logger.Info($"OnPlayerJoinedEvt() - Local Player Joined: {args.player.Name}, ID: {SID(args.player.PlayerId)}");
-                //NewLocalPayerCompletionSource.TrySetResult(args);
+
             }
         }
 
@@ -106,34 +104,6 @@ namespace AceGameCode
             return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
 
         }
-
-
-    // Use this as scaffolding for CreatePlayerAsync()
-    //  public async Task<LocalPeerJoinedGameData> JoinExistingGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
-    //     {
-    //         if (joinData.PlayerData != null)
-    //         {
-    //             appCore.PlayerJoinedEvt += OnPlayerJoinedEvt;
-    //             // TODO: check to make sure we aren;t aready waiting for a player
-    //             NewLocalPayerCompletionSource =  new TaskCompletionSource<PlayerJoinedEventArgs>();
-    //         }
-
-    //         PeerJoinedGroupData peerJoinedData = await aceGameNet.JoinExistingGameAsync(gameInfo, appCore.AceApian,  null );
-    //         if (joinData.PlayerData == null || !peerJoinedData.Success)
-    //         {
-    //             NewLocalPayerCompletionSource = null;
-    //             return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
-    //         }
-
-    //         PlayerJoinedEventArgs pjArgs =  await  NewLocalPayerCompletionSource.Task.ContinueWith(
-    //             t => {  NewLocalPayerCompletionSource=null; return t.Result;}, TaskScheduler.Default
-    //             );
-
-    //         Logger.Info($"JoinExistingGameAsync() Game Joined. Local Player Created.");
-    //         return new LocalPeerJoinedGameData(peerJoinedData.GroupInfo.GroupId, peerJoinedData.Success,  peerJoinedData.Message);
-
-    //     }
-
 
         public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
         {

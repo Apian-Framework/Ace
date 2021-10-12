@@ -43,7 +43,6 @@ namespace AceGameCode
                     kApianGroupName,
                     SinglePeerGroupManager.kGroupType,
                     0,  // min validators
-                    0,   // max validators
                     kValidatorWaitMs
                     );
 

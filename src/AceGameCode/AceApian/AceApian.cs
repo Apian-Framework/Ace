@@ -19,30 +19,12 @@ namespace AceGameCode
         }
     }
 
-    //
-    // This is an example of data passed in the JoinGroupRequest. "Player" turned out to be a dumb idea...
-    // &&&& I'm leaving this here for now in case I think of somethign I *do* want in the JoinRequest
-    // TODO: either use this for something or delete it.
-    //
-    // public class AceJoinGameData
-    // {
-    //     public AcePlayer PlayerData { get; private set; }    // if null the peer wants to be a validator
-    //     public AceJoinGameData(AcePlayer playerData = null)
-    //     {
-    //         PlayerData = playerData;
-    //     }
-    //     public string ToJson() => JsonConvert.SerializeObject(this);
-    //     public static AceJoinGameData FromJson(string json) => JsonConvert.DeserializeObject<AceJoinGameData>(json);
-    // }
-
-
-    public static class AceApianFactory
+     public static class AceApianFactory
     {
         public static readonly List<string> ApianGroupTypes = new List<string>()
         {
             SinglePeerGroupManager.kGroupType,
             CreatorSezGroupManager.kGroupType,
-            // LeaderSezGroupManager.kGroupType
         };
 
         public static AceApian Create(string apianGroupType, IAceGameNet aceGameNet, AceAppCore appCore)
@@ -56,9 +38,6 @@ namespace AceGameCode
             case CreatorSezGroupManager.kGroupType:
                 result =  new AceApianCreatorSez(aceGameNet, appCore);
                 break;
-            // case LeaderSezGroupManager.kGroupType:
-            //     result =  new AceApianLeaderSez(aceGameNet, appCore);
-            //     break;
             default:
                 UniLogger.GetLogger("Apian").Warn($"AceApianFactory.Create() Unknown GroupType: {apianGroupType}");
                 result = null;
@@ -71,7 +50,6 @@ namespace AceGameCode
     public abstract class AceApian : ApianBase
     {
 
-        //public Dictionary<string, AceApianPeer> apianPeers;
         public IAceGameNet AceGameNet {get; private set;}
         protected AceAppCore appCore;
 
@@ -84,8 +62,6 @@ namespace AceGameCode
 
             // ApianClock and GroupMgr are created in the group-manager-specific subclass
             // ie. AceApianLeaderSez
-
-            //apianPeers = new Dictionary<string, AceApianPeer>();
         }
 
         public override ApianGroupMember CreateGroupMember(string peerId, string appMemberDataJson)
@@ -100,11 +76,6 @@ namespace AceGameCode
             // ((AceAppCore)AppCore)?.Loop();   <- ace AppCore has no loop()
         }
 
-        // protected void AddApianPeer(string p2pId, string peerHelloData)
-        // {
-        //     AceApianPeer p = new AceApianPeer(p2pId, peerHelloData);
-        //     apianPeers[p2pId] = p;
-        // }
 
         public override void OnPeerMissing(string channelId, string p2pId)
         {

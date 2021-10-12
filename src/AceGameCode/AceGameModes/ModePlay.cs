@@ -91,66 +91,6 @@ namespace AceGameCode
             return appCore;
         }
 
-/*
-        public async void OnGameSelected( GameSelectedEventArgs args)
-        {
-            AceGameInfo gameInfo = args.gameInfo;
-            GameSelectedEventArgs.ReturnCode result = args.result;
-            string gameName = gameInfo?.GroupName;
-
-            logger.Info($"{(ModeName())} - OnGameSelected(): {gameName}, result: {result}");
-
-            bool targetGameExisted = (gameName != null) && announcedGames.ContainsKey(gameName);
-
-            if (result == GameSelectedEventArgs.ReturnCode.kCancel)
-            {
-                ExitAbruptly( $"OnGameSelected(): No Game Selected.");
-            }
-            else
-            {
-                AceAppCore appCore = null;
-                if (gameInfo != null)
-                {
-                    appCore = CreateCorePair(gameInfo);
-                    appl.AddAppCore(appCore);
-                    appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
-                    appCore.Start(AceCoreModeFactory.kStart );
-                }
-
-                LocalPeerJoinedGameData joinData = null;
-
-                switch (result)
-                {
-                case GameSelectedEventArgs.ReturnCode.kCreate:
-                    if (targetGameExisted)
-                        ExitAbruptly( $"OnGameSelected(): Cannot create.  Ace Game \"{gameName}\" already exists");
-                    else {
-                        joinData = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
-                    }
-                    break;
-
-                case GameSelectedEventArgs.ReturnCode.kJoin:
-                    if (targetGameExisted)
-                    {
-                        joinData = await appl.JoinExistingGameAsync(gameInfo, appCore);
-                    }
-                    else
-                        ExitAbruptly( $"OnGameSelected(): Apian Game \"{gameName}\" Not Found");
-                    break;
-                }
-
-                if (joinData?.success == false)
-                    ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{joinData?.failureReason}\"");
-            }
-        }
-*/
-
-        // private void _OnLocalGameJoinedEvt(object sender, LocalPeerJoinedGameEventArgs args)
-        // {
-        //     if (args.success == false)
-        //         ExitAbruptly( $"ModePlay: Failed to join Apian group: \"{args.failureReason}\"");
-        // }
-
         // AppCore event handlers
         private void _OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs ga)
         {
@@ -158,9 +98,7 @@ namespace AceGameCode
             logger.Info($"{(ModeName())} - OnPlayerJoinedEvt() - {(isLocal?"Local":"Remote")} Member Joined: {ga.player.Name}, ID: {SID(ga.player.PeerId)}");
             if (ga.player.PeerId == appl.LocalPeer.PeerId)
             {
-                // appCore.RespawnPlayerEvt += _OnRespawnPlayerEvt;  // FIXME: why does this happen here?  &&&&
-                // //_SetState(kWaitingForMembers);
-                // _SetState(kPlaying);
+
             }
         }
 

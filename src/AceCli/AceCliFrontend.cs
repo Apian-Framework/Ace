@@ -102,7 +102,6 @@ namespace AceCli
             GameSelectedEventArgs.ReturnCode result;
             AceGameInfo gameInfo;
             int minValidators = 1;
-            int maxValidators = 3;
             int validatorWaitMs = 5000;
 
 
@@ -127,7 +126,7 @@ namespace AceCli
                 // TODO: does the frontend have any busniess selecting an agreement type?
                 // Hmm. Actually, it kinda does: a user might well want to choose from a set of them.
                 gameInfo = existingGames.Keys.Contains(gameName) ? existingGames[gameName]
-                    :  AceAppl.aceGameNet.CreateAceGameInfo( gameName, groupType, minValidators, maxValidators, validatorWaitMs);
+                    :  AceAppl.aceGameNet.CreateAceGameInfo( gameName, groupType, minValidators, validatorWaitMs);
 
             }
             else
