@@ -216,7 +216,13 @@ namespace AceGameCode
             Logger.Debug($"_AddPlayer().  ID: {SID(p.PlayerId)} Name: {p.Name} Peer: {SID(p.PeerId)}");
             if  ( CoreState.Players.ContainsKey(p.PlayerId))
             {
-                Logger.Warn($"_AddPlayer(). Player already exists!!!!");
+                Logger.Warn($"_AddPlayer(). Player already exists!");
+                return false;
+            }
+
+            if (CoreState.Players.Count >= AceApian.GameInfo.MaxPlayers )
+            {
+                Logger.Warn($"_AddPlayer(). MaxPlayers ({AceApian.GameInfo.MaxPlayers}) already present!");
                 return false;
             }
 

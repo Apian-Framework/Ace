@@ -42,6 +42,7 @@ namespace AceGameCode
                 AceGameInfo gameInfo = appl.aceGameNet.CreateAceGameInfo(
                     kApianGroupName,
                     SinglePeerGroupManager.kGroupType,
+                    2, // maxPlayers
                     0,  // min validators
                     kValidatorWaitMs
                     );

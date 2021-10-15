@@ -9,6 +9,7 @@ namespace AceGameCode
     public class AceGameInfo : ApianGroupInfo
     {
         public string GameName { get => GroupName; }
+        public int MaxPlayers { get => int.Parse(GroupParams["MaxPlayers"]); }
         public int MinValidators { get => int.Parse(GroupParams["MinValidators"]); }
         public int ValidatorWaitMs { get => int.Parse(GroupParams["ValidatorWaitMs"]); }
         public AceGameInfo(ApianGroupInfo agi) : base(agi) {}

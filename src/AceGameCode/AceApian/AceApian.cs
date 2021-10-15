@@ -51,6 +51,7 @@ namespace AceGameCode
     {
 
         public IAceGameNet AceGameNet {get; private set;}
+        public AceGameInfo GameInfo { get => GroupMgr.GroupInfo as AceGameInfo; }
         protected AceAppCore appCore;
 
         public long SystemTime { get => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;}  // system clock

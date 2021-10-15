@@ -72,12 +72,27 @@ namespace AceGameCode
                 if (!gameJoinedResult.success)
                     ExitAbruptly( gameJoinedResult.failureReason);
 
+
+
+                bool isValidator = settings.tempSettings.TryGetValue("validator", out var value) ? Convert.ToBoolean(value) : false;
+                if (isValidator)
+                      logger.Info($"Validator setting is set. Will not create a player.");
+                else
+                {
+                    logger.Info($"Requesting new player.");
+                    PlayerJoinedEventArgs joinData = await appl.CreateNewPlayerAsync( appCore, gameJoinedResult.groupId, appl.MakeAiPlayer() );
+                    if (joinData == null)
+                        ExitAbruptly("Failed to Create New Player");
+                }
+
+
             } catch (Exception ex) {
                 ExitAbruptly( $"{ex.Message}");
 
                 return;
             }
         }
+
 
         private AceAppCore _SetupCorePair(AceGameInfo gameInfo)
         {

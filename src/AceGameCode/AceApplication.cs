@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Apian;
@@ -83,15 +84,6 @@ namespace AceGameCode
         }
 
 
-        private void OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs args)
-        {
-            if (args.player.PeerId == LocalPeer.PeerId)
-            {
-                Logger.Info($"OnPlayerJoinedEvt() - Local Player Joined: {args.player.Name}, ID: {SID(args.player.PlayerId)}");
-
-            }
-        }
-
         public async Task<LocalPeerJoinedGameData> CreateAndJoinGameAsync(AceGameInfo gameInfo, AceAppCore appCore)
         {
             PeerJoinedGroupData peerJoinedData = await aceGameNet.CreateAndJoinGameAsync(gameInfo, appCore.AceApian, null );
@@ -105,10 +97,56 @@ namespace AceGameCode
 
         }
 
+        TaskCompletionSource<PlayerJoinedEventArgs> NewLocalPayerCompletionSource;
+        public async Task<PlayerJoinedEventArgs> CreateNewPlayerAsync(AceAppCore appCore, string gameId, AcePlayer newPlayer)
+        {
+            if ( NewLocalPayerCompletionSource != null)
+                throw new Exception("Already waiting for a new local player()");
+
+
+            NewLocalPayerCompletionSource = new TaskCompletionSource<PlayerJoinedEventArgs>();
+            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(1000));
+
+            appCore.PlayerJoinedEvt += _OnPlayerJoinedEvt;
+            SendNewPlayerRequest(gameId, newPlayer);
+
+            try {
+
+                return await  NewLocalPayerCompletionSource.Task.ContinueWith(
+                    t => {  NewLocalPayerCompletionSource=null;
+                        if (t.IsCanceled)
+                            return null;
+                        else
+                            return t.Result;
+                     },
+                    cts.Token,
+                    TaskContinuationOptions.None,
+                    TaskScheduler.Default
+                    ).ConfigureAwait(false);
+            } catch (TaskCanceledException ) {
+                return null;
+            } finally {
+                appCore.PlayerJoinedEvt -= _OnPlayerJoinedEvt;
+                cts.Dispose();
+            }
+        }
+
         public void SendNewPlayerRequest(string gameId, AcePlayer newPlayer)
         {
             aceGameNet.SendNewPlayerRequest(gameId, newPlayer);
         }
+
+        private void _OnPlayerJoinedEvt(object sender, PlayerJoinedEventArgs args)
+        {
+            if (args.player.PeerId == LocalPeer.PeerId)
+            {
+                Logger.Info($"OnPlayerJoinedEvt() - Local Player Joined: {args.player.Name}, ID: {SID(args.player.PlayerId)}");
+                NewLocalPayerCompletionSource?.TrySetResult(args);
+            }
+        }
+
+
+        // AppCore event handlers
 
         public void ExitApplication()
         {
