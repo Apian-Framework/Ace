@@ -9,10 +9,28 @@ namespace AceGameCode
     public class AceGameInfo : ApianGroupInfo
     {
         public string GameName { get => GroupName; }
-        public int MaxPlayers { get => int.Parse(GroupParams["MaxPlayers"]); }
-        public int MinValidators { get => int.Parse(GroupParams["MinValidators"]); }
-        public int ValidatorWaitMs { get => int.Parse(GroupParams["ValidatorWaitMs"]); }
+        public int MaxPlayers { get => int.Parse(GroupParams["MaxPlayers"]); set => GroupParams["MaxPlayers"] = $"{value}";}
+        public int MinValidators { get => int.Parse(GroupParams["MinValidators"]); set => GroupParams["MinValidators"] = $"{value}";}
+        public int ValidatorWaitMs { get => int.Parse(GroupParams["ValidatorWaitMs"]); set => GroupParams["ValidatorWaitMs"] = $"{value}";}
         public AceGameInfo(ApianGroupInfo agi) : base(agi) {}
+    }
+
+    public class AceGameStatus : ApianGroupStatus
+    {
+        public int PlayerCount { get => int.Parse(OtherStatus["PlayerCount"]); set => OtherStatus["PlayerCount"] = $"{value}"; }
+        public int ValidatorCount { get => int.Parse(OtherStatus["ValidatorCount"]); set => OtherStatus["ValidatorCount"] = $"{value}";}
+        public AceGameStatus(ApianGroupStatus ags) : base(ags) {}
+    }
+
+    public class AceGameAnnounceData
+    {
+        public AceGameInfo GameInfo { get; }
+        public AceGameStatus GameStatus { get; }
+        public AceGameAnnounceData(GroupAnnounceResult gar)
+        {
+            GameInfo = new AceGameInfo(gar.GroupInfo);
+            GameStatus = new AceGameStatus(gar.GroupStatus);
+        }
     }
 
 
@@ -33,7 +51,7 @@ namespace AceGameCode
     }
 
     public class GameSelectedEventArgs : EventArgs {
-        public enum ReturnCode {kCreate, kJoin, kCancel};
+        public enum ReturnCode {kCreate, kJoin, kCancel, kMaxPlayers};
         public ReturnCode result;
         public AceGameInfo gameInfo;
         public GameSelectedEventArgs( AceGameInfo gi, ReturnCode r) { gameInfo = gi; result = r; }
@@ -62,8 +80,8 @@ namespace AceGameCode
 
         void ConnectToNetwork(string netConnectionStr);
         Task<PeerJoinedNetworkData> JoinGameNetworkAsync(string networkName);
-        Task<Dictionary<string, AceGameInfo>> GetExistingGamesAsync(int waitMs);
-        Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames);
+        Task<Dictionary<string, AceGameAnnounceData>> GetExistingGamesAsync(int waitMs);
+        Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameAnnounceData> existingGames);
         void ExitApplication(); // relatively controlled exit via modeMgr
 
 

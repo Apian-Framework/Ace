@@ -40,7 +40,7 @@ namespace AceGameCode
                 appl.ConnectToNetwork(settings.p2pConnectionString); // should be async? GameNet.Connect() currently is not
                 GameNet.PeerJoinedNetworkData netJoinData = await appl.JoinGameNetworkAsync(settings.apianNetworkName);
 
-                Dictionary<string, AceGameInfo> gamesAvail = await appl.GetExistingGamesAsync((int)(kListenForGamesSecs*1000));
+                Dictionary<string, AceGameAnnounceData> gamesAvail = await appl.GetExistingGamesAsync((int)(kListenForGamesSecs*1000));
                 GameSelectedEventArgs selection = await appl.SelectGameAsync(gamesAvail);
 
                 if (selection.result == GameSelectedEventArgs.ReturnCode.kCancel)
@@ -53,36 +53,55 @@ namespace AceGameCode
 
                 LocalPeerJoinedGameData gameJoinedResult = null;
 
-                if (selection.result == GameSelectedEventArgs.ReturnCode.kCreate)
+                bool isValidator = settings.tempSettings.TryGetValue("validator", out var value) ? Convert.ToBoolean(value) : false;
+
+                switch (selection.result)
                 {
+                case  GameSelectedEventArgs.ReturnCode.kCreate:
                     // Create and join
                     if (targetGameExisted)
                         ExitAbruptly($"Cannot create.  Beam Game \"{gameInfo.GameName}\" already exists");
                     else
                         gameJoinedResult = await appl.CreateAndJoinGameAsync(gameInfo, appCore);
+                    break;
 
-                } else {
+                case GameSelectedEventArgs.ReturnCode.kJoin:
                     // Join existing
                     if (!targetGameExisted)
+                    {
                          ExitAbruptly($"Cannot Join.  Beam Game \"{gameInfo.GameName}\" not found");
+                         return;
+                    }
                     else
                         gameJoinedResult = await appl.JoinExistingGameAsync(gameInfo, appCore);
+                    break;
+
+                case GameSelectedEventArgs.ReturnCode.kMaxPlayers:
+                    gameJoinedResult = new LocalPeerJoinedGameData(gameInfo.GroupId, false,
+                            $"Cannot Join as player. Beam Game \"{gameInfo.GameName}\" already has {gameInfo.MaxPlayers} players.");
+                    break;
+
+                case GameSelectedEventArgs.ReturnCode.kCancel:
+                    gameJoinedResult = new LocalPeerJoinedGameData(gameInfo.GroupId, false, "Join Cancelled");
+                    break;
                 }
 
                 if (!gameJoinedResult.success)
+                {
                     ExitAbruptly( gameJoinedResult.failureReason);
+                    return;
+                }
 
-
-
-                bool isValidator = settings.tempSettings.TryGetValue("validator", out var value) ? Convert.ToBoolean(value) : false;
                 if (isValidator)
                       logger.Info($"Validator setting is set. Will not create a player.");
                 else
                 {
                     logger.Info($"Requesting new player.");
                     PlayerJoinedEventArgs joinData = await appl.CreateNewPlayerAsync( appCore, gameJoinedResult.groupId, appl.MakeAiPlayer() );
-                    if (joinData == null)
+                    if (joinData == null) {
                         ExitAbruptly("Failed to Create New Player");
+                        return;
+                    }
                 }
 
 

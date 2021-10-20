@@ -70,6 +70,14 @@ namespace AceGameCode
             return new AceApianPeer(peerId, appMemberDataJson);
         }
 
+        public override ApianGroupStatus CurrentGroupStatus()
+        {
+            AceGameStatus curStat = new AceGameStatus(base.CurrentGroupStatus());
+            curStat.PlayerCount = appCore.PlayerCount();
+            curStat.ValidatorCount = curStat.ActiveMemberCount - curStat.PlayerCount;
+            return curStat;
+        }
+
         public override void Update()
         {
             GroupMgr?.Update();

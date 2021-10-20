@@ -63,18 +63,20 @@ namespace AceGameCode
             return await aceGameNet.JoinGameNetworkAsync(networkName, LocalPeer);
         }
 
-        public async Task<Dictionary<string, AceGameInfo>> GetExistingGamesAsync(int waitMs)
+        public async Task<Dictionary<string, AceGameAnnounceData>> GetExistingGamesAsync(int waitMs)
         {
-            Dictionary<string, ApianGroupInfo> groupsDict = await aceGameNet.RequestGroupsAsync(waitMs);
-            Dictionary<string, AceGameInfo> gameDict = groupsDict.Values.Select((grp) => new AceGameInfo(grp)).ToDictionary(gm => gm.GroupName, gm => gm);
+            Dictionary<string, GroupAnnounceResult> groupsDict = await aceGameNet.RequestGroupsAsync(waitMs);
+            Dictionary<string, AceGameAnnounceData> gameDict = groupsDict.Values
+                .Select((gar) => new AceGameAnnounceData(gar))
+                .ToDictionary(agd => agd.GameInfo.GameName, agd => agd);
             Logger.Info($"GetExistingGamesAsync() Got result:\n  {string.Join(Environment.NewLine, gameDict)}");
             return gameDict;
         }
 
-        public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames)
+        public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameAnnounceData> existingGames)
         {
             GameSelectedEventArgs selection = await frontend.SelectGameAsync(existingGames);
-            Logger.Info($"SelectGameAsync() Got result:  GameName: {selection.gameInfo.GroupName} ResultCode: {selection.result}");
+            Logger.Info($"SelectGameAsync() Got result:  GameName: {selection.gameInfo.GameName} ResultCode: {selection.result}");
             return selection;
         }
 

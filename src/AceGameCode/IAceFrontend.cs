@@ -17,6 +17,6 @@ namespace AceGameCode
         AceUserSettings GetUserSettings();
 
         void DisplayMessage(MessageSeverity level, string msgText);
-        Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames);
+        Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameAnnounceData> existingGames);
     }
 }

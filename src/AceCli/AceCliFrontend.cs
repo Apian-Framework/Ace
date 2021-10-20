@@ -92,7 +92,7 @@ namespace AceCli
         // and ends with the frontend setting the result for a passed-in TaskCompletionResult
 
         // In THIS case, we just return (but have to await something to be async)
-        public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameInfo> existingGames)
+        public async Task<GameSelectedEventArgs> SelectGameAsync(IDictionary<string, AceGameAnnounceData> existingGames)
         {
             // gameName cli param can end in:
             //  '+' = means join the game if it exists, create if not
@@ -100,11 +100,10 @@ namespace AceCli
             //  '' = "nothing" means join if it's there, or error
             string gameName = null;
             GameSelectedEventArgs.ReturnCode result;
-            AceGameInfo gameInfo;
             int maxPlayers = 2;
             int minValidators = 1;
             int validatorWaitMs = 5000;
-
+            AceGameInfo gameInfo;
 
             string argStr;
             if (userSettings.tempSettings.TryGetValue("gameName", out argStr))
@@ -126,9 +125,15 @@ namespace AceCli
 
                 // TODO: does the frontend have any busniess selecting an agreement type?
                 // Hmm. Actually, it kinda does: a user might well want to choose from a set of them.
-                gameInfo = existingGames.Keys.Contains(gameName) ? existingGames[gameName]
+                gameInfo = existingGames.Keys.Contains(gameName) ? existingGames[gameName].GameInfo
                     :  AceAppl.aceGameNet.CreateAceGameInfo( gameName, groupType, maxPlayers, minValidators, validatorWaitMs);
 
+                AceGameStatus gameStatus = existingGames.Keys.Contains(gameName) ? existingGames[gameName].GameStatus : null;
+
+                // If we are asking to be a player - is there room in this game?
+                bool isValidator = userSettings.tempSettings.TryGetValue("validator", out var value) ? Convert.ToBoolean(value) : false;
+                if (!isValidator && gameStatus?.PlayerCount >= gameInfo.MaxPlayers)
+                    result = GameSelectedEventArgs.ReturnCode.kMaxPlayers;
             }
             else
                 throw new Exception($"gameName setting missing.");

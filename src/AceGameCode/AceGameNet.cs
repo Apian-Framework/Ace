@@ -44,7 +44,9 @@ namespace AceGameCode
 
         public AceGameInfo CreateAceGameInfo(string gameName, string apianGroupType, int maxPlayers, int minValidators, int validatorWaitMs)
         {
-           string netName = p2p.GetMainChannel()?.Name;
+            // TODO: does this belong here? Seems a little odd that it is here and CurrentGroupStatus() is in AceApian.
+            // On the other hand, they really are kinda different and are created at different times.
+            string netName = p2p.GetMainChannel()?.Name;
             if (netName == null)
             {
                 logger.Error($"CreateAceGameInfo() - Must join network first"); // TODO: probably ought to assert? Can this be recoverable?
@@ -55,13 +57,13 @@ namespace AceGameCode
             groupChanInfo.name = gameName;
             groupChanInfo.id = $"{netName}/{gameName}";
 
-            ApianGroupInfo groupInfo = new ApianGroupInfo(apianGroupType, groupChanInfo, LocalP2pId(), gameName);
+            AceGameInfo gameInfo = new AceGameInfo(new ApianGroupInfo(apianGroupType, groupChanInfo, LocalP2pId(), gameName));
 
-            groupInfo.GroupParams["MaxPlayers"] = $"{maxPlayers}";
-            groupInfo.GroupParams["MinValidators"] = $"{minValidators}";
-            groupInfo.GroupParams["ValidatorWaitMs"] = $"{validatorWaitMs}";
+            gameInfo.MaxPlayers = maxPlayers;
+            gameInfo.MinValidators = minValidators;
+            gameInfo.ValidatorWaitMs = validatorWaitMs;
 
-            return new AceGameInfo(groupInfo);
+            return gameInfo;
         }
 
         public void JoinExistingGame(AceGameInfo gameInfo, AceApian apian, string localDataJson)
