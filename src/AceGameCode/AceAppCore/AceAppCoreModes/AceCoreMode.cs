@@ -13,6 +13,9 @@ namespace AceGameCode
 		public UniLogger logger;
 		public int ModeId() => manager.CurrentModeId();
 
+		//
+		// IAppMode
+		//
 		public void Setup(AppModeManager mgr, IModalApp gInst = null)
 		{
 			// Called by manager before Start()
@@ -34,6 +37,11 @@ namespace AceGameCode
 
 		public virtual object End() => null;
         public virtual string ModeName() => this.GetType().Name;
+
+		//
+		// AceCoreMode
+		//
+
 
     }
 }
