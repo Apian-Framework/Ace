@@ -58,12 +58,13 @@ namespace AceGameCode
 
         public long FrameApianTime { get => AceApian.ApianClock.CurrentTime; }
 
+        protected AceCoreMessageDeserializer coreMsgDeser;
+
         public AceAppCore()
         {
             Logger = UniLogger.GetLogger("AppCore"); // TODO: should thins be in a (currently nonexistent) base ctor?
-
+            coreMsgDeser = new AceCoreMessageDeserializer();
             CoreModeMgr = new FsmModeManager(new AceCoreModeFactory(), this);
-
             CoreState = new AceCoreState();
             OnNewCoreState();
 
@@ -135,7 +136,7 @@ namespace AceGameCode
 
         public override ApianCoreMessage DeserializeCoreMessage(ApianWrappedCoreMessage aMsg)
         {
-            return AceCoreMessageDeserializer.FromJSON(aMsg.CoreMsgType, aMsg.SerializedCoreMsg);
+            return coreMsgDeser.FromJSON(aMsg.CoreMsgType, aMsg.SerializedCoreMsg);
         }
 
         public override bool CommandIsValid(ApianCoreMessage cmdMsg)

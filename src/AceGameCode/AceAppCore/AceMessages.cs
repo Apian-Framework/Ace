@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Apian;
@@ -88,28 +89,21 @@ namespace AceGameCode
 
     // Serialization
 
-    static public class AceCoreMessageDeserializer
+    public class AceCoreMessageDeserializer : ApianCoreMessageDeserializer
     {
-
-         public static Dictionary<string, Func<string, ApianCoreMessage>> aceDeserializers = new  Dictionary<string, Func<string, ApianCoreMessage>>()
-         {
-            {AceMessage.kNewPlayer, (s) => JsonConvert.DeserializeObject<NewPlayerMsg>(s) },
-
-            {AceMessage.kPlayerLeft, (s) => JsonConvert.DeserializeObject<PlayerLeftMsg>(s) },
-            {AceMessage.kPlacePlane, (s) => JsonConvert.DeserializeObject<PlacePlaneMsg>(s) },
-            {AceMessage.kMovePlane, (s) => JsonConvert.DeserializeObject<MovePlaneMsg>(s) },
-
-            // This is a sort-of generic Apian-defined CoreMessage. In practice the Player-related
-            // messages maybe outo to go there as well.
-            // Also - these entries probably ought to be in an Apian-defined dict that is checks along with the local one.
-            // ...or maybe merge them... I dunno.
-            {ApianMessage.CheckpointMsg, (s) => JsonConvert.DeserializeObject<ApianCheckpointMsg>(s) },
-         };
-
-        public static ApianCoreMessage FromJSON(string coreMsgType, string json)
+        public AceCoreMessageDeserializer() : base()
         {
-            return  aceDeserializers[coreMsgType](json) as ApianCoreMessage;
+
+            coreDeserializers =  coreDeserializers.Concat(
+                new  Dictionary<string, Func<string, ApianCoreMessage>>()
+                {
+                    {AceMessage.kNewPlayer, (s) => JsonConvert.DeserializeObject<NewPlayerMsg>(s) },
+                    {AceMessage.kPlayerLeft, (s) => JsonConvert.DeserializeObject<PlayerLeftMsg>(s) },
+                    {AceMessage.kPlacePlane, (s) => JsonConvert.DeserializeObject<PlacePlaneMsg>(s) },
+                    {AceMessage.kMovePlane, (s) => JsonConvert.DeserializeObject<MovePlaneMsg>(s) },
+                }  ).ToDictionary(x=>x.Key,x=>x.Value);
         }
+
     }
 
 }
