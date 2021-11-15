@@ -17,7 +17,7 @@ namespace AceGameCode
         public const string kDogfight = "AcDgft";
         public const string kGameOver = "AcGmOv";
 
-        public AceMessage(string type, long timeStamp) : base(type, timeStamp) {}
+        public AceMessage(string type, long timeStamp) : base(kAppCore, type, timeStamp) {}
         public AceMessage() : base() {} // Must have this for Newtonsoft
     }
 

@@ -79,7 +79,7 @@ namespace AceGameCode
                 // [BeamMessage.kPlaceClaimMsg] = (msg, seqNum) => this.OnPlaceClaimCmd(msg as PlaceClaimMsg, seqNum),
                 // [BeamMessage.kPlaceHitMsg] = (msg, seqNum) => this.OnPlaceHitCmd(msg as PlaceHitMsg, seqNum),
                 // [BeamMessage.kPlaceRemovedMsg] = (msg, seqNum) => this.OnPlaceRemovedCmd(msg as PlaceRemovedMsg, seqNum),
-                [ApianMessage.CheckpointMsg] = (msg, seqNum) => this.OnCheckpointCommand(msg as ApianCheckpointMsg, seqNum),
+                [GroupCoreMessage.CheckpointRequest] = (msg, seqNum) => this.OnCheckpointCommand(msg as CheckpointRequestMsg, seqNum),
             };
         }
 
@@ -134,9 +134,9 @@ namespace AceGameCode
 
         }
 
-        public override ApianCoreMessage DeserializeCoreMessage(ApianWrappedCoreMessage aMsg)
+        public override ApianCoreMessage DeserializeCoreMessage(ApianWrappedMessage aMsg)
         {
-            return coreMsgDeser.FromJSON(aMsg.CoreMsgType, aMsg.SerializedCoreMsg);
+            return coreMsgDeser.FromJSON(aMsg.PayloadMsgType, aMsg.SerializedPayload);
         }
 
         public override bool CommandIsValid(ApianCoreMessage cmdMsg)
@@ -158,7 +158,7 @@ namespace AceGameCode
             //return BeamMessageValidity.ValidateObservations( prevMsg as BeamMessage, testMsg as BeamMessage);
         }
 
-        public override void OnCheckpointCommand(ApianCheckpointMsg msg, long seqNum)
+        public override void OnCheckpointCommand(CheckpointRequestMsg msg, long seqNum)
         {
             // TODO: if every AppCore uses this then it should be hoisted to the base class
             Logger.Info($"OnCheckpointCommand() seqNum: {seqNum}, timestamp: {msg.TimeStamp}, Now: {FrameApianTime}");
