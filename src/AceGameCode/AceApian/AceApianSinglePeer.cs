@@ -14,5 +14,11 @@ namespace AceGameCode
             ApianClock = new CoopApianClock(this); // FIXME: Ace needs a virtual timer-based clock
             GroupMgr = new SinglePeerGroupManager(this);
         }
+
+        public override (bool, string) CheckQuorum()
+        {
+            return (true, "");
+        }
+
     }
 }
