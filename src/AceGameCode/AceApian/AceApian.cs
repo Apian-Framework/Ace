@@ -171,19 +171,6 @@ namespace AceGameCode
             return sBuilder.ToString();
         }
 
-        public override void SendCheckpointState(long timeStamp, long seqNum, string serializedState) // called by client app
-        {
-            using (MD5 md5Hash = MD5.Create())
-            {
-                string hash = _GetMd5Hash(md5Hash, serializedState);
-                Logger.Verbose($"SendStateCheckpoint(): SeqNum: {seqNum}, Hash: {hash}");
-                GroupMgr.OnLocalStateCheckpoint(seqNum, timeStamp, hash, serializedState);
-
-                GroupCheckpointReportMsg rpt = new GroupCheckpointReportMsg(GroupMgr.GroupId, seqNum, timeStamp, hash);
-                AceGameNet.SendApianMessage(GroupMgr.GroupId, rpt);
-            }
-        }
-
         public void SendNewPlayerObs(long timeStamp, AcePlayer newPlayer)
         {
             Logger.Debug($"SendNewPlayerObs()");

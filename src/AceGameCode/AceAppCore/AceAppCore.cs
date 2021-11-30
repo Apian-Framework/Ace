@@ -79,7 +79,6 @@ namespace AceGameCode
                 // [BeamMessage.kPlaceClaimMsg] = (msg, seqNum) => this.OnPlaceClaimCmd(msg as PlaceClaimMsg, seqNum),
                 // [BeamMessage.kPlaceHitMsg] = (msg, seqNum) => this.OnPlaceHitCmd(msg as PlaceHitMsg, seqNum),
                 // [BeamMessage.kPlaceRemovedMsg] = (msg, seqNum) => this.OnPlaceRemovedCmd(msg as PlaceRemovedMsg, seqNum),
-                [GroupCoreMessage.CheckpointRequest] = (msg, seqNum) => this.OnCheckpointCommand(msg as CheckpointRequestMsg, seqNum),
             };
         }
 
@@ -145,10 +144,13 @@ namespace AceGameCode
         }
         public override void OnApianCommand(long cmdSeqNum, ApianCoreMessage coreMsg)
         {
-            Logger.Debug($"OnApianCommand() Seq#: {cmdSeqNum} Cmd: {coreMsg.MsgType}");
+            // TODO: Hoist this to ApianAppCore ?
+            Logger.Debug($"OnApianCommand() Seq#: {cmdSeqNum} Cmd: {coreMsg?.MsgType ?? "null"}");
             CoreState.UpdateCommandSequenceNumber(cmdSeqNum);
-            ClientMsgCommandHandlers[coreMsg.MsgType](coreMsg, cmdSeqNum);
-
+            if (coreMsg != null)
+            {
+                ClientMsgCommandHandlers[coreMsg.MsgType](coreMsg, cmdSeqNum);
+            }
         }
 
         // what effect does the previous msg have on the testMsg?
@@ -158,15 +160,16 @@ namespace AceGameCode
             //return BeamMessageValidity.ValidateObservations( prevMsg as BeamMessage, testMsg as BeamMessage);
         }
 
-        public override void OnCheckpointCommand(CheckpointRequestMsg msg, long seqNum)
+
+        public override string DoCheckpointCoreState(long seqNum, long checkPointTime)
         {
             // TODO: if every AppCore uses this then it should be hoisted to the base class
-            Logger.Info($"OnCheckpointCommand() seqNum: {seqNum}, timestamp: {msg.TimeStamp}, Now: {FrameApianTime}");
+            Logger.Info($"DoCheckpointCoreState() seqNum: {seqNum}, timestamp: {checkPointTime}, Now: {FrameApianTime}");
             string stateJson = CoreState.ApianSerialized(new AceCoreState.SerialArgs(seqNum));
             Logger.Debug($"**** Checkpoint:\n{stateJson}\n************\n");
-            AceApian.SendCheckpointState(FrameApianTime, seqNum, stateJson);
-
+            return stateJson;
         }
+
         public override void ApplyCheckpointStateData(long seqNum,  long timeStamp,  string stateHash,  string serializedData)
         {
             Logger.Debug($"ApplyStateData() Seq#: seqNum ApianTime: {timeStamp}");
