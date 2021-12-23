@@ -13,16 +13,6 @@ namespace AceGameCode
         // Mode begins with no AppCore, no Apian, not connection, nothing...
         // It has: net connection string and the name of the desired ApianNetwork to join.
 
-        // - Connect to Gamenet
-        // - Join the ApianNet. Wait for
-        //     -> OnPeerJoinedNetwork()
-        // - Get a list of available games
-        // - Ask FE for a game to create/join. Wait for:
-        //     -> OnGameSelected()
-        // - Create/Join game. Wait for:
-        //     -> OnPlayerJoinedEvt()
-        // - Start playing  (could wait for others to join...)
-
         private AceUserSettings settings ;
         private Dictionary<string, AceGameInfo> announcedGames;
 
