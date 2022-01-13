@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Apian;
 using ModalApplication;
+using P2pNet; // Only for PeerClockSyncInfo. Seems like a bad idea?
 using GameNet;
 using UniLog;
 using static UniLog.UniLogger; // for SID()
@@ -208,7 +209,7 @@ namespace AceGameCode
 
         public void OnPeerMissing(string p2pId, string netId) { }
         public void OnPeerReturned(string p2pId, string netId){ }
-        public void OnPeerSync(string channel, string p2pId, long clockOffsetMs, long netLagMs) {} // stubbed
+        public void OnPeerSync(string channel, string p2pId, PeerClockSyncInfo syncInfo) {} // stubbed
 
 
     }

@@ -134,7 +134,8 @@ namespace AceGameCode
                     // In a leader-based ApianGroup the first peer will probably go stright from Joining to Active
                 }
                 break;
-            case ApianGroupMember.Status.Syncing:
+            case ApianGroupMember.Status.SyncingState:
+            case ApianGroupMember.Status.SyncingClock:
                 if (member.CurStatus == ApianGroupMember.Status.Active)
                 {
                     // Most common situation
